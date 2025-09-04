@@ -1,19 +1,47 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Benjamin Wojtecki</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Benjamin Wojteckit</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <h1>Benjamin Wojtecki</h1>
-      <p>🎓 Étudiant à l'<strong>ENS Rennes</strong> en Informatique</p>
-      <p>📍 Rennes, France</p>
-      <p>💻 Passionné par les <strong>algorithmes</strong>, le <strong>machine learning</strong>, et le <strong>développement logiciel</strong></p>
+  <nav class="navbar">
+    <div class="logo">BW</div>
+
+    <ul class="nav-links">
+      <li><a href="#">Accueil</a></li>
+      <li><a href="#">Services</a></li>
+      <li><a href="#">Portfolio</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+
+    <div class="theme-switch">
+      <input type="checkbox" id="themeCheckbox">
+      <label for="themeCheckbox">
+        <span class="slider"></span>
+      </label>
     </div>
+  </nav>
+
+  <div class="container">
+    <div class="profile-photo">
+      <img src="Trombi.jpeg" alt="Photo_de_Profil">
+    </div>
+
+    <div class="content">
+      <h1>Benjamin Wojtecki</h1>
+      <p>I am student in computer science at the ENS Rennes.</p>
+
+      <h2>About me</h2>
+      <div class="contents">
+      </div>  
+    </div>
+
   </div>
+  
+
+  <script src="js/script.js"></script>
 </body>
 </html>
