@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>PAC-Bayes Bound - Tutoriel</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <!-- Barre de navigation -->
+  <nav class="navbar">
+    <div class="logo">BW</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="scientific.html">Scientific interest</a></li>
+      <li><a href="portfolio.html">Portfolio</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- Contenu du tuto -->
+  <div class="container">
+    <div class="content">
+      <h3>Why this tutorial</h3>
+      <p>
+        During my journey in Pac Bayes Bound, it was difficult for me to deeply understand concepts behind Pac Bayes Bound and more particulary to understand 
+        proofs of theses bounds. I'm just a student in computer science who loved study mathematic apply to computer science. 
+      </p>
+      <h2>Introduction</h2>
+      <p>
+        In this tutorial, we’re going to explore the main ideas behind the PAC-Bayes Bound, a powerful tool for understanding and controlling the generalization 
+        error of a predictor. First, let’s unpack the name. $\textbf{PAC}$ stands for Probably Approximately Correct. In this setting, a learner receives some training 
+        samples and must choose a function, called a hypothesis, to make predictions. The goal is that, with high probability, the chosen hypothesis will have
+        a low generalization error when applied to unseen data. In supervised learning, we usually define two main sets: $\mathcal{X}$, the universe of objects
+        (our input space). $\mathcal{Y}$, the set of possible labels (our output space). For example, if we look at the spam detection problem: $\mathcal{X}$ 
+        would be the set of emails. $\mathcal{Y} = {0,1}$, where 1 means “spam” and 0 means “not spam.” A predictor is simply a function $f:\mathcal{X} \to \mathcal{Y}$ 
+        that assigns a label to each input. More generally, we consider a whole family of predictors ${f_\theta : \theta \in \Theta}$, where $\Theta$ represents 
+        the parameter space. Each $\theta$ corresponds to a specific predictor. Now, if we take an example pair $(x,y) \in \mathcal{X} \times \mathcal{Y}$.
+        If $f(x) = y$, our prediction is correct. Otherwise, it’s an error. To keep track of these errors in a more systematic way, we use a loss function. 
+        A $\textbf{loss}$ is a function $\ell : \mathcal{Y}^2 \to [0,+\infty[$ that measures how far a prediction is from the true label. By definition, $\ell(y,y) = 0$, 
+        meaning no penalty is given if the prediction is correct.
+      </p>
+
+      
+
+      <h2>Notation</h2>
+      <p>
+        Learning problem can be describe by a tuple ($\mathcal{H}, \mathcal{Z}, \ell$), where $\mathcal{H}$ is hypothesis space with a distance $d_\mathcal{H}$, 
+        data space $\mathcal{Z}$ and a loss function $\ell : \mathcal{H} \times \mathcal{Z} \xrightarrow{}\mathbf{R}$. Our objective is to bound the $\mathbf{population}$  
+        $\mathbf{risk}$ of a given hypothesis $\textit{h}$ defined as $R_\mathcal{D}(h) = \mathbf{E}_{z\sim \mathcal{D}}[\ell(h, \mathbf{z})]$, where $\mathcal{D}$ denotes
+        the unknow data distribution over $\mathcal{Z}$.
+        <ul>
+          <li>$Tuple (\mathcal{H}, \mathcal{Z}, \ell), where </li>
+          <li>$\hat{R}(Q)$ = risque empirique</li>
+          <li>$KL(Q \parallel P)$ = divergence de Kullback-Leibler</li>
+          <li>$n$ = nombre d’échantillons</li>
+          <li>$\delta$ = probabilité de confiance</li>
+        </ul>
+      </p>
+      <p>
+        $$ R(Q) \leq \hat{R}(Q) + \sqrt{\frac{KL(Q \parallel P) + \ln \frac{2\sqrt{n}}{\delta}}{2n}} $$
+      </p>
+
+      <p>
+        où :
+        <ul>
+          <li>$R(Q)$ = risque attendu</li>
+          <li>$\hat{R}(Q)$ = risque empirique</li>
+          <li>$KL(Q \parallel P)$ = divergence de Kullback-Leibler</li>
+          <li>$n$ = nombre d’échantillons</li>
+          <li>$\delta$ = probabilité de confiance</li>
+        </ul>
+      </p>
+    </div>
+  </div>
+
+  <!-- Script LaTeX MathJax -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</body>
+</html>
