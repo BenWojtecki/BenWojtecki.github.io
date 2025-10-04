@@ -50,11 +50,10 @@
         $\mathbf{risk}$ of a given hypothesis $\textit{h}$ defined as $R_\mathcal{D}(h) = \mathbf{E}_{z\sim \mathcal{D}}[\ell(h, \mathbf{z})]$, where $\mathcal{D}$ denotes
         the unknow data distribution over $\mathcal{Z}$.
         <ul>
-          <li>$Tuple (\mathcal{H}, \mathcal{Z}, \ell), where </li>
-          <li>$\hat{R}(Q)$ = risque empirique</li>
-          <li>$KL(Q \parallel P)$ = divergence de Kullback-Leibler</li>
-          <li>$n$ = nombre d’échantillons</li>
-          <li>$\delta$ = probabilité de confiance</li>
+          <li>$Lip_b^L$ is the set of bounded L-Lipschitz functions </li>
+          <li>For any $\delta \in [0;1]$, with probability $1-\delta$, $j \xrightarrow{} \Delta_\mathcal{S}^2(h)$ is $L(m, \delta)$-Lipschitz, where m is the size of dataset.
+            We can read this expression like: The function $\Delta_\mathcal{S}^2(h)$ is continue Lipschitz with a constant, probability at least, $1-\delta$, is bound by $(m,\delta)$.
+          </li>
         </ul>
       </p>
       <p>
@@ -73,6 +72,108 @@
       </p>
     </div>
   </div>
+
+  <h2>Preuve — régularité de \(\varphi_S\) et union bound</h2>
+
+  <p><b>Hypothèses.</b><br>
+  Soit \(S\) un échantillon de taille \(m\). On définit, pour tout \(h\) dans l'espace des hypothèses \(\mathcal{H}\),
+  </p>
+  Si une fonction f est L-Lipschitz, alors $g(x) = cf(x)$ est (cL)-Lipschitz. Formellement : $\mid g(h) -g(h')\mid = \mid c\mid\mid f(h) - f(h')\mid \leq \mid c \mid L\|h-h'\|$
+
+
+  <p style="text-align:center;">
+  \[
+  \Delta_S^2(h), \qquad \varphi_S(h) := 2m\,\Delta_S^2(h).
+  \]
+  </p>
+
+  <p>On suppose que pour tout \(\delta'\in(0,1)\), on a la propriété suivante :</p>
+
+  <p style="text-align:center;">
+  \[
+  \Pr\!\Big( h\mapsto\Delta_S^2(h)\ \text{est}\ L(m,\delta')\text{-Lipschitz} \Big)\;\ge\;1-\delta',
+  \]
+  </p>
+
+  <p>c'est-à-dire que, avec probabilité au moins \(1-\delta'\),</p>
+
+  <p style="text-align:center;">
+  \[
+  \forall h,h'\in\mathcal{H},\qquad
+  \big|\Delta_S^2(h)-\Delta_S^2(h')\big|
+  \le L(m,\delta')\,\|h-h'\|.
+  \]
+  </p>
+
+  <h3>1. Passage de \(\Delta_S^2\) à \(\varphi_S\)</h3>
+
+  <p>Si, avec probabilité au moins \(1-\delta/2\), la fonction \(h\mapsto\Delta_S^2(h)\) est 
+  \(L\!\big(m,\tfrac{\delta}{2}\big)\)-Lipschitz, alors en multipliant par la constante \(2m\) on obtient :</p>
+
+  <p style="text-align:center;">
+  \[
+  \forall h,h'\in\mathcal{H},\qquad
+  |\varphi_S(h)-\varphi_S(h')|
+  =2m\,|\Delta_S^2(h)-\Delta_S^2(h')|
+  \le 2m\,L\!\Big(m,\tfrac{\delta}{2}\Big)\,\|h-h'\|.
+  \]
+  </p>
+
+  <p>Ainsi \(h\mapsto\varphi_S(h)\) est \(\alpha(m,\delta)\)-Lipschitz avec</p>
+
+  <p style="text-align:center; font-size: 110%;">
+  \[
+  \alpha(m,\delta)=2m\,L\!\Big(m,\tfrac{\delta}{2}\Big).
+  \]
+  </p>
+
+  <h3>2. Union bound avec l'Équation (4)</h3>
+
+  <p>Soit \(E_1 := \{\Delta_S^2 \text{ est } L(m,\tfrac{\delta}{2})\text{-Lipschitz}\}\) et 
+  \(E_2 := \{\text{(Équation (4)) est vérifiée}\}\).  
+  Alors</p>
+
+  <p style="text-align:center;">
+  \(\Pr(E_1)\ge 1-\tfrac{\delta}{2}, \qquad \Pr(E_2)\ge 1-\tfrac{\delta}{2}.\)
+  </p>
+
+  <p>Par l'inégalité de Boole (union bound) :</p>
+
+  <p style="text-align:center;">
+  \[
+  \Pr(E_1\cap E_2) \;\ge\; 1-\delta.
+  \]
+  </p>
+
+  <h3>3. Conclusion</h3>
+
+  <p>Sur l'événement \(E_1\cap E_2\) (de probabilité au moins \(1-\delta\)) :</p>
+
+  <ul>
+    <li>\(\Delta_S^2\) est \(L\!\big(m,\tfrac{\delta}{2}\big)\)-Lipschitz,</li>
+    <li>\(\varphi_S\) est \(\alpha(m,\delta)\)-Lipschitz avec 
+    \(\alpha(m,\delta)=2m\,L\!\big(m,\tfrac{\delta}{2}\big)\),</li>
+    <li>et l'Équation (4) est satisfaite.</li>
+  </ul>
+
+  <p>En réarrangeant l'inégalité de l'Équation (4), on obtient donc la borne désirée valable avec probabilité au moins \(1-\delta\).</p>
+
+  <p style="text-align:right;">\(\square\)</p>
+
+
+  <h2>Petit rappel mathématique</h2>
+  <p>Rappelons la dérivée de Radon-Nykodyn, $h(g) = \frac{d\rho}{d\pi}(g) \Leftrightarrow h\rho = h(g)d\pi(g)$</p>. Si $\rho, \pi$, sont sur le même espace 
+  mesurable et $\rho$ absolument continue respectivement à $\pi$,  $(\rho << \pi)$.
+
+  <p style="text-align:center;">
+    $\mathbf{E}_{y\sim \rho}[\phi(g)] = \int \phi(g)d\rho(g) = \int \phi(g)h(g)d\pi(g) = \mathbf{E}_{g\sim \pi}[h(g)\phi(g)]$
+  </p>
+  <p>Posons $f(u) = ulog(u)$:</p>
+
+  <p style="text-align:center;">
+    $D_f(\rho \| \pi) = \mathbf{E}_{h\sim \rho}f(\frac{d\rho}{d\pi}) = \mathbf{E}_{h\sim \rho}[\frac{d\rho}{d\pi}(h)log(\frac{d\rho}{d\pi}(h))]
+    = \mathbf{E}_{h\sim \pi}[log(\frac{d\rho}{d\pi}(h))] = KL(\rho \| \pi)$ On utilise un changement de mesure.
+  </p>
 
   <!-- Script LaTeX MathJax -->
   <script>
