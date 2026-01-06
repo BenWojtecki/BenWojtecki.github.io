@@ -3,18 +3,27 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Benjamin Wojteckit</title>
+  <title>Benjamin Wojtecki</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
+  <div class="background-shapes">
+  <div class="line-structure a"></div>
+  <div class="line-structure b"></div>
+  <div class="line-structure c"></div>
+</div>
+
+
   <nav class="navbar">
-    <div class="logo">BW</div>
+    <div class="logo">
+      <img src="Img/Ant.jpg" alt="Logo"/>
+    </div>
 
     <ul class="nav-links">
-      <li><a href="#">Accueil</a></li>
-      <li><a href="#">Scientific interest</a></li>
-      <li><a href="#">Portfolio</a></li>
-      <li><a href="#">Contact</a></li>
+      <li><a href="#accueil">About me</a></li>
+      <li><a href="#research-interests">Scientific interest</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
     </ul>
 
     <div class="theme-switch">
@@ -25,23 +34,113 @@
     </div>
   </nav>
 
-  <div class="container">
-    <div class="profile-photo">
-      <img src="Ant.jpg" alt="Photo_de_Profil">
-    </div>
+  <main class="container">
 
     <div class="content">
-      <h1>Benjamin Wojtecki</h1>
-      <p>I am student in computer science at the ENS Rennes. You can find <a href = "Pac_Bayes_Bound.html"> here</a> a survey about PAC-Bayes Bound</p>
+      <h1 id="accueil" class="glitch" data-text="Benjamin Wojtecki">
+        Benjamin Wojtecki
+      </h1>
 
-      <h2>About me</h2>
-      <div class="contents">
-      </div>  
+      <p class="typography">
+        First-year M.Sc. student in Computer Science at ENS Rennes, with a strong interest in theoretical machine learning. 
+        Seeking a research internship in machine learning, learning theory, or related interdisciplinary fields.
+      </p>
+
+    <h2 id="research-interests" class="section-title">Research Interests</h2>
+    <div class="research-grid">
+
+      <div class="research-card">
+        <h3>Machine Learning</h3>
+        <p>
+          Theory driven and empirical machine learning, with a focus on
+          generalization, robustness and interpretability of models.
+        </p>
+      </div>
+
+      <div class="research-card">
+        <h3>PAC-Bayes Theory</h3>
+        <p>
+          PAC-Bayesian generalization bounds, probabilistic learning guarantees, and applications to modern deep learning architectures.
+        </p>
+      </div>
+
+      <div class="research-card">
+        <h3>Astroinformatics</h3>
+        <p>
+          Data-driven astronomy and astrophysics like large-scale surveys,
+          signal extraction, uncertainty quantification and inverse problems.
+        </p>
+      </div>
+
+      <div class="research-card">
+        <h3>Machine Learning for Physics</h3>
+        <p>
+          Applying ML methods to physical systems, simulations, and
+          scientific discovery with physics informed constraints.
+        </p>
+      </div>
+
+      <div class="research-card">
+        <h3>High Performance Computing</h3>
+        <p>
+            Parallel and high-performance computing for large-scale scientific workloads,
+            optimization of algorithms and efficient resource utilization.
+        </p>
+      </div>
+
+      <div class="research-card">
+        <h3>Statistics</h3>
+        <p>
+          Statistical learning theory, Bayesian inference, uncertainty estimation,
+          and high-dimensional data analysis.
+        </p>
+      </div>
+
     </div>
 
-  </div>
-  
 
-  <script src="js/script.js"></script>
+    <h2 id="projects" class="section-title-alt">Projects</h2>
+
+    <div class="projects">
+
+      <article class="project">
+        <span class="project-marker"></span>
+
+        <div class="project-content">
+          <h3>PAC-Bayes Generalization Bounds</h3>
+          <p>
+            A theoretical survey on PAC-Bayesian bounds, exploring
+            generalization guarantees, probabilistic risk bounds and
+            their implications for modern machine learning.
+          </p>
+
+          <a class="project-link" href="../Pac_Bayes_Bound.html">
+            Read the survey →
+          </a>
+        </div>
+      </article>
+    </div>
+
+    <h2 id="contact" class="section-title">Contact</h2>
+
+    <div class="contact">
+      <a href="mailto:benjamin.wojtecki@ens-rennes.fr" 
+        class="contact-item" 
+        aria-label="Email">
+        ✉
+      </a>
+      <a href="https://github.com/BenWojtecki" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        class="contact-item1" 
+        aria-label="GitHub">
+        ⌨
+      </a>
+    </div>
+
+    </div>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
