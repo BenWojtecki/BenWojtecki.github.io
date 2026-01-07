@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Benjamin Wojtecki - Visualizer</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+<link rel="stylesheet" href="styleVisualizator.css"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo">
+    <img src="Ant.jpg" alt="Logo"/>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#accueil">About me</a></li>
+    <li><a href="#research-interests">Scientific interest</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="theme-switch">
+    <input type="checkbox" id="themeCheckbox">
+    <label for="themeCheckbox">
+      <span class="slider"></span>
+    </label>
+  </div>
+</nav>
+
+<div class="visualizator-container">
+  <h1 class="h1-visualizator">VISUALIZER</h1>
+  <p class="subtitle">Gradient descent visualizator</p>
+  
+  <div class="controls">
+    <input type="text" id="equationInput" placeholder="Enter function" value="sin(x)"/>
+    <button id="plotBtn">Execute</button>
+  </div>
+  
+  <div class="canvas-container">
+    <canvas id="canvas" width="900" height="600"></canvas>
+  </div>
+  
+  <div class="examples">
+    <h3>Presets</h3>
+    <div class="example-buttons">
+      <button class="example-btn" data-eq="sin(x)">sin(x)</button>
+      <button class="example-btn" data-eq="cos(x)">cos(x)</button>
+      <button class="example-btn" data-eq="x^2">x²</button>
+      <button class="example-btn" data-eq="x^3 - 2*x">x³ - 2x</button>
+      <button class="example-btn" data-eq="exp(-x^2/10)">exp(-x²/10)</button>
+      <button class="example-btn" data-eq="tan(x)">tan(x)</button>
+      <button class="example-btn" data-eq="abs(x)">abs(x)</button>
+      <button class="example-btn" data-eq="sin(x)/x">sinc(x)</button>
+    </div>
+  </div>
+  
+  <div class="info">
+    <strong>Help:</strong> Variable x | Operators: + - * / ^ | Functions: sin cos tan exp log abs sqrt
+  </div>
+</div>
+
+<script src="visualisator.js"></script>
+</body>
+</html>
