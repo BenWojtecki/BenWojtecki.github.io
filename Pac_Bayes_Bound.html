@@ -3,7 +3,10 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  
   <title>PAC-Bayes Bound - Tutoriel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
@@ -20,15 +23,29 @@
     </ul>
   </nav>
 
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+      <li><a href="#whyThisTutorial">Why this tutorial</a></li>
+      <li><a href="#introduction">Introduction</a></li>
+      <li><a href="#generalizationBounds">Generalization bounds</a></li>
+      <li><a href="#background">Background</a></li>
+
+      <li><a href="#notation">Notation</a></li>
+      <li><a href="#preuve-–-régularité-de-φ_s-et-union-bound">Preuve — régularité de φ_S et union bound</a></li>
+      <li><a href="#petit-rappel-mathématique">Petit rappel mathématique</a></li>
+    </ul>
+  </nav>
   <!-- Contenu du tuto -->
   <div class="container">
     <div class="content">
-      <h3>Why this tutorial</h3>
+      <h2 id="whyThisTutorial">Why this tutorial</h2>
       <p>
         During my journey in Pac Bayes Bound, it was difficult for me to deeply understand concepts behind Pac Bayes Bound and more particulary to understand 
         proofs of theses bounds. I'm just a student in computer science who loved study mathematic apply to computer science. 
       </p>
-      <h2>Introduction</h2>
+
+      <h2 id="introduction">Introduction</h2>
       <p>
         In this tutorial, we’re going to explore the main ideas behind the PAC-Bayes Bound, a powerful tool for understanding and controlling the generalization 
         error of a predictor. First, let’s unpack the name. $\textbf{PAC}$ stands for Probably Approximately Correct. In this setting, a learner receives some training 
@@ -43,140 +60,302 @@
         meaning no penalty is given if the prediction is correct.
       </p>
 
+      <h2 id="generalizationBounds">Generalization bounds</h2>
+        <h3 id="generalIdeaPac"> The general idea of the PAC Bayesian generalization bounds</h3>
+
+        <p>
+          Originally, generalization bounds have been introduced for deterministic models. However, Shawe-Taylor and Williamson 
+          <cite> <a href="https://doi.org/10.1145/267460.267466">(Shawe-Taylor &amp; Williamson, 1997)</a> </cite> were interested in Bayesian models 
+          and presented bounds for Bayesian models in 1997. 
+        </p>
+
+
+        <h3 id="bayesianModels">Bayesian models</h3>
+        <p>
+          In Bayesian models, instead of selecting a single hypothesis, we obtain a distribution over hypotheses, called a prior, noted $\pi$ 
+          that represents our beliefs before seeing the data, and a posterior, noted $\rho$ that updates these beliefs after observing the data.
+        </p>
+
+        <h3 id="pacBayesBounds">PAC-Bayes bounds</h3>
+        <p>
+          The first PAC-Bayesian generalization bound in its current form have been introduced by a seminal paper of McAllester
+            <cite> <a href="https://doi.org/10.1145/279943.279989">(McAllester, 1999).</a> </cite> In this blog post, we dissect a bound 
+            proposed later by McAllester in 2003 and further improved by Maurer
+            <cite> <a href="https://doi.org/10.1023/A:1021840411064">(McAllester, 2003).</a> </cite> 
+         </p>
+
+          <div class="theorem">
+          For any dataset $D$, any hypothesis class $\mathcal{H}$, any prior $\pi$ supported on $\mathcal{H}$ and any $\delta \in (0,1)$, we have:
+
+          $$
+          \mathbb{P}_{S\sim D}\Bigg[\forall \rho \in \mathcal{H}: \mathbb{E}_{\theta \sim \rho} \big [R(\rho)\big] \leq \mathbb{E}_{\theta \sim \rho} \big[r(\rho)\big] + \sqrt{\frac{KL(\rho \| \pi) + \log(\frac{2\sqrt{m}}{\delta})}{2m}}\Bigg] \ge 1-\delta
+          $$
+          </div>
+
+         <p>
+          In brief, the bound states that the true error of a model is approximately its training error plus a complexity penalty
+          that depends on the $KL$ divergence between the posterior and prior distributions over hypotheses, as well as the sample size.
+          If the reader can understand the proof of theses historical bounds, understanding modern PAC-Bayes bounds is mathematically straightforward.
+          Indeed, to derive this bound, we only need to use three classical inequalities: Markov's inequality, Jensen's inequality and the change of measure inequality.
+         </p>
+
+         <h2 id="background">Background</h3>
+          <p>
+            Before we dive in PAC-Bayes bounds theory, we recall some notation about learning theory and measure theory. These fileds are important to understand
+            the PAC-Bayes bounds theory. Let is divide this section into two parts: Measure theory and Learning theory.
+          </p>
+
+          <h3 id="measureTheory">Measure theory</h3>
+            <p>
+              In measure theory, we consider a measurable space $(\mathcal{Z}, \mathcal{A})$, where $\mathcal{Z}$ is a set and $\mathcal{A}$ is a $\sigma$-algebra of subsets of $\mathcal{Z}$. A probability measure $P$ on this space assigns probabilities to measurable sets in $\mathcal{A}$.
+              To connect learning theory with measure theory, we often consider random variables defined on this measurable space. A random variable $X: \mathcal{Z} \to \mathbb{R}$ is a measurable function that assigns a real value to each outcome in $\mathcal{Z}$.
+              The expectation of a random variable $X$ with respect to the probability measure $P$ is defined as:
+              $$
+              \mathbb{E}_P[X] = \int_{\mathcal{Z}} X(z) dP(z)
+              $$
+              This integral represents the average value of the random variable $X$ when outcomes are drawn according to the probability measure $P$.
+              Now, let us recall an important result in measure theory, and usefull in Pac-Bayes bounds theory, the change of measure inequality.
+            </p>
+
+            <div class="theorem" id="DVFormula">
+              <b> Donsker–Varadhan variational formula.</b><br>
+              For any measurable, bounded function $f : X \to \mathbb{R}$, we have:
+
+              $$
+              \mathbb{E}_{x \sim \rho}\big[f(x) \big] \leq \mathrm{KL}(\rho \| \pi) + \log\mathbb{E}_{x\sim\pi}[\exp(f(x))] 
+              $$
+            </div>
+
+            <p>
+              This theorem expresses a deep intuition. Let us unpack what this mean. Image we start from a reference $\pi$. Now, suppose
+              we want to give importance to certain regions where a quantity $f(x)$ is larger, (for example, where a model performs better).
+              To do that, we introduce a new distribution $\rho$ that gives more weight to those regions. Unfortunetally, there is a cost. If $\rho$ deviate
+              too much from $\pi$, we pay a penalty proportional to the Kullback-Leibler divergence $\mathrm{KL}(\rho \| \pi)$. This divergence measures how 
+              different the two distributions are. 
+              
+              To return to our theorem, the term $\mathbb{E}_{x \sim \rho}\big[f(x) \big]$ is upper bounded by the trade off between the $KL$ divergence and
+              the exponential moment. This indicates that while one increase the expected value of $f(x)$ under a new distribution $\rho$, doing so sustain 
+              a cost proportional to the deviation $\rho$ under a new distribution $\pi$.
+            </p>
+
+            <p> 
+              This balance between fitting the data and not drifting too far from a prior is exactly the idea used in PAC-Bayes theory. 
+              There, the expected loss under the posterior $\rho$ is controlled by the empirical loss plus a $KL$ term measuring the complexity of the 
+              posterior relative to the prior $\pi$. We can illustrate this idea with an interactive visualization below.
+            </p>
+
+            <div id="root"></div>
+
+            <p>
+              Note that the blue line from tradeoff graph, initially increases, then begins to decrease. The optimal point lies at the peak of the blue curve, 
+              where the derivative equals zero: $\frac{d}{dt}\big[ \mathbb{E}_{x \sim \rho}\big[f(x)\big] - \mathrm{KL}(\rho \| \pi) \big] = 0$. This represents 
+              the best tradeoff between maximizing the expected value and minimizing the divergence from π.
+            </p>
+            
+
+          <h3 id="Probability theorem">Probability theorem</h3>
+            <p>
+              We recall Markov's inequality and Jensen's inequality, two important results in probability theory that are frequently used in the derivation of PAC-Bayes bounds.
+            </p>
+
+            <div class="theorem" id="MarkovInequality">
+              <b> Markov's inequality.</b><br>
+              For any non-negative random variable $X$ and any $k > 0$, we have:
+                $$
+                  \mathbb{P}(X \geq k) \leq \frac{\mathbb{E}[X]}{k}
+                $$
+            </div>
+
+            <div class="theorem" id="JensenInequality">
+              <b> Jensen's inequality.</b><br>
+              For any convex function $\phi$ and any random variable $X$, we have:
+                $$
+                  \phi(\mathbb{E}[X]) \leq \mathbb{E}[\phi(X)]
+                $$
+            </div>
+
+          <h3 id="Intermediate lemma">Intermediate lemma</h3>
+            <p>
+              We now state an intermediate lemma that will be useful in all proofs. 
+              The proof of this intermediate lemma is not explain here, because it 
+              is not usefull for the understanding PAC-Bayes.  
+
+            </p>
+
+            <div class="theorem">
+              Let $ \mathbf{X} = (X_1, \dots, X_m)$ be i.i.d variables with 
+              $0 \leq X_i \leq 1$, and let $r(X) = \frac{1}{m} \sum X_i$. Then, for $m \geq 8$,
+              $$
+                \mathbb{E}_S\big[e^{2m(R(\theta) - r_S(\theta))^2}\big] \le 2\sqrt{m}.
+              $$
+            </div>
+
+          <h3 id="learningTheory">Learning theory</h3>
+
+            <p>
+              In learning problem, we formalize the setup with a tuple ($\mathcal{H}$, $\mathcal{Z}$, $\ell$),
+               composed of a hypothesis space $\mathcal{H}$, which correspond the set of 
+               possible predictors, a data space $\mathcal{Z}$, which contains the sample 
+               $(X,Y)$, and a loss function that measure the error of the prediction error. 
+               To learn, the model has access to a training dataset $Z_n = (Z_1, \ldots, Z_n)$, 
+               where each $Z_i = (X_i, Y_i)$ is drawn i.i.d. from some unknown distribution $D$ 
+               over $\mathcal{Z}$. We consider a family of hypotheses $\mathcal{H}$ and assume 
+               oracle access to the loss function $\ell$. For any predictor $\theta \in \mathcal{H}$, 
+               we can define two key notions of risk. 
+            </p>
+            <p>The expected risk (or true risk):</p>
+              $$
+              R(\theta) = \mathbb{E}_{Z \sim D}[\ell(\theta, Z)]
+              $$
+
+            <p>The empirical risk (computed on the training data):</p>
+
+              $$
+              \hat{R}(\theta) = \frac{1}{n} \sum_{i=1}^m \ell(\theta, Z_i)
+              $$
+            <p>
+              We define a prior $\pi$ (its assumed probability distribution before some evidence is taken)
+              distribution over $\mathcal{H}$ and a posterior $\rho$ (that resuls from updating 
+              $\pi$) over $\mathcal{H}$. In learning problem, we concerned about bounding the 
+              difference between the true risk and the empirical risk. This is done using the 
+              PAC (Probably Approximately correct) framework, in which we try to shown that 
+              $\hat{R}(\theta)$ is not too far $R(\theta)$ with high probability. Our goal in 
+              PAC-Bayes is to bound the generalization gap, based on how far the empirical risk 
+              is from the true risk. 
+            </p>
+
+            <div class="theorem">
+            <b> Generalization gap </b><br>
+
+              $$
+              \Delta(\theta) = \lvert {R(\theta) - \hat{R}(\theta)} \rvert
+              $$
+            </div>
+
+      <h3>General idea to construct a proof</h3>
+        PAC-Bayes bound proofs usually follow three key steps: Apply a change of 
+        measure using the Donsker-Varadhan inequality. Use Markov's inequality to
+        move from expectation to high probability. Use intermediate lemma to control
+        exponential moments and simplify the expression and to conclude rewrite 
+        the bound to obtain the final generalize bound. 
+
+      <h3> McAllester bound</h3>
+
+      We recall McAllester's PAC-Bayes bound, which provides a probabilistic upper bound 
+      on the true risk in terms of the empirical risk and the KL divergence between a 
+      posterior and a prior distribution.  
+
+
+      <div class="theorem">
+        <b> McAllester Bound: </b><br>
+          For any dataset $D$, any hypothesis class $\mathcal{H}$, and any prior $\pi \in \mathcal{H}$, for all $\delta \in (0,1)$ with probability at least $(1 - \delta)$ over the random draw $\mathcal{S}_m \sim \mathcal{D}^m$, the following holds for all posteriors $\rho \in \mathcal{H}$:
+          $$
+            \mathbb{P}_{S\sim D^{m}}\Bigg[\forall \rho \in \mathcal{H}: \mathbb{E}_{\theta \sim \rho} \big [R(\theta)\big] \leq \mathbb{E}_{\theta \sim \rho} \big[\hat{R}(\theta)\big] + \sqrt{\frac{KL(\rho \| \pi) + \log(\frac{2\sqrt{m}}{\delta})}{2m}}\Bigg] \ge 1-\delta
+          $$
+      </div>
+    <p>We follow McAllester's original proof to get sense of how PAC-Bayes bounds works. Most of the heavy lifting is done by the incredibly usefull change of measure.</p>
+
+
+
+
+
+
+    <section id="proof">
+      <h2>Proof</h2>
+
+      <p>
+        Let $\mathcal{S}$ be a fixed dataset. We define the variance-like quantity
+      </p>
+
+      $$
+        \phi_{\mathcal{S}}(\theta) = \lambda \Delta^2(\theta) = \lambda (R(\theta) - \hat{R}(\theta))^2
+      $$
+
+      <p>
+        where $\lambda > 0$ is a free parameter to be optimized later. Since $\phi_{\mathcal{S}}$ is convex,
+        Jensen's inequality gives:
+      </p>
+
+      $$
+        \big\lvert \mathbb{E}_{\theta\sim \rho}\left[\lambda (R(\theta) - \hat{R}(\theta)) \right] \big\rvert ^2 
+        \leq \mathbb{E}_{\theta\sim \rho}\left[\big\lvert R(\theta) - \hat{R}(\theta) \big\rvert ^2 \right]
+      $$
+
+
+      <p>
+        The expectation above is taken with respect to the posterior $\rho$, which depends on the dataset 
+        $\mathcal{S}$. To obtain a bound that holds uniformly over datasets, we express it in terms of the 
+        prior $\pi$, which is independent of the data. Using the Donsker-Varadhan inequality, we get:
+      </p>
+
+      $$
+        \mathbb{E}_{\theta \sim \rho}\big[\lambda \Delta^2(\theta) \big] \leq \mathrm{KL}(\rho \| \pi) + \log\mathbb{E}_{\theta \sim \pi}[\exp(\lambda \Delta^2(\theta))] 
+      $$
+
+      $$
+        \mathbb{E}_{\theta \sim \rho} \Big[\big\lvert R(\theta) - \hat{R}(\theta) \big\rvert^2 \Big] 
+        \leq \frac{1}{\lambda} \Bigg( KL(\rho \| \pi) + \underbrace{\log \mathbb{E}_{\theta \sim \pi} \Big[ e^{\lambda \big\lvert R(\theta) - \hat{R}(\theta) \big\rvert^2} \Big]}_{\mathcal{A}}\Bigg)
+      $$
+
+      <p>We fix $\lambda = 2m$, which allows us to apply the intermediate lemma and we obtain the following result:</p> 
+
+      $$
+        \mathcal{A} \Rightarrow{} \mathbb{E}_{\theta \sim \pi}\big[e^{2m(R(\theta) - \hat{R}(\theta))^2}\big] \le 2\sqrt{m}.
+      $$
+
+      <p>Applying this result with Markov's inequality, for any $\delta \in (0,1)$, we obtain:</p>
+
+      $$
+        \mathbb{P}_{\theta \sim \pi} \left(\mathcal{A} \ge \frac{2\sqrt{m}}{\delta} \right) \le \delta.
+      $$
+
+      <p>Thus, with probability at leat $(1-\delta)$ over the sampling $\mathcal{S}$</p>
+
+      $$
+        \mathcal{A}_{\mathcal{S}} \Rightarrow{}  
+        \mathbb{E}_{\theta \sim \pi}[e^{2m (R(\theta) - \hat{R}(\theta))^2}]
+        \le \frac{2\sqrt{m}}{\delta}
+        \tag{4}
+      $$
+
+      <p>Substituting this result into the previous inequality, we have, with probability at least $(1-\delta)$, for all posteriors $\rho$:</p>
+
+      $$
+        \mathbb{E}_{\theta \sim \rho}\big[(R(\theta) - \hat{R}(\theta))^2 \big]
+        \le
+        \frac{ KL(\rho \| \pi) + \log\frac{2\sqrt{m}}{\delta} }{2m}
+        \tag{5}
+      $$
+
+      <p>By convexity of $x \mapsto x^2$ and Jensen’s inequality:</p>
+
+      $$
+       \big(\mathbb{E}_{\theta \sim \rho}[R(\theta) - \hat{R}(\theta)] \big)^2 
+       \le \mathbb{E}_{\theta \sim \rho}[(R(\theta) - \hat{R}(\theta))^2]
+      $$
+
+      <p>With (5), we obtain:</p>
+
+      $$
+        \big( \mathbb{E}_{\theta \sim \rho} \big[ R(\theta) \big] - \mathbb{E}_{\theta \sim \rho} \big[ \hat{R}(\theta) \big] \big)^2
+        \le \frac{KL(Q \| \pi) + \log \frac{2\sqrt{m}}{\delta}}{2m}
+      $$
+
+      <p>The square root, we finally arrive at the PAC-Bayesian bound:</p> 
+
+      $$
+        \mathbb{E}_{\theta \sim \rho} \big[ R(\theta) \big] 
+        \le \mathbb{E}_{\theta \sim \rho} \big[ \hat{R}(\theta) \big] + \sqrt{\frac{KL(Q\|P) + \log\frac{2\sqrt{m}}{\delta}}{2m}}
+      $$
+
+      <p>which holds with probability at least $1-\delta$ over the sampling of $\mathcal{S}$.</p>
+
+
+      <p>
+        This bound provides a powerful way to control the generalization error of a learning algorithm by balancing empirical 
+        performance with model complexity, as measured by the KL divergence between the posterior and prior distributions.
+        We can observe if the loss is bounded in $[a,b]$ instead of $[0;1]$, the bound is multiplied by a factor$(b-a)$.
       
-
-      <h2>Notation</h2>
-      <p>
-        Learning problem can be describe by a tuple ($\mathcal{H}, \mathcal{Z}, \ell$), where $\mathcal{H}$ is hypothesis space with a distance $d_\mathcal{H}$, 
-        data space $\mathcal{Z}$ and a loss function $\ell : \mathcal{H} \times \mathcal{Z} \xrightarrow{}\mathbf{R}$. Our objective is to bound the $\mathbf{population}$  
-        $\mathbf{risk}$ of a given hypothesis $\textit{h}$ defined as $R_\mathcal{D}(h) = \mathbf{E}_{z\sim \mathcal{D}}[\ell(h, \mathbf{z})]$, where $\mathcal{D}$ denotes
-        the unknow data distribution over $\mathcal{Z}$.
-        <ul>
-          <li>$Lip_b^L$ is the set of bounded L-Lipschitz functions </li>
-          <li>For any $\delta \in [0;1]$, with probability $1-\delta$, $j \xrightarrow{} \Delta_\mathcal{S}^2(h)$ is $L(m, \delta)$-Lipschitz, where m is the size of dataset.
-            We can read this expression like: The function $\Delta_\mathcal{S}^2(h)$ is continue Lipschitz with a constant, probability at least, $1-\delta$, is bound by $(m,\delta)$.
-          </li>
-        </ul>
-      </p>
-      <p>
-        $$ R(Q) \leq \hat{R}(Q) + \sqrt{\frac{KL(Q \parallel P) + \ln \frac{2\sqrt{n}}{\delta}}{2n}} $$
-      </p>
-
-      <p>
-        où :
-        <ul>
-          <li>$R(Q)$ = risque attendu</li>
-          <li>$\hat{R}(Q)$ = risque empirique</li>
-          <li>$KL(Q \parallel P)$ = divergence de Kullback-Leibler</li>
-          <li>$n$ = nombre d’échantillons</li>
-          <li>$\delta$ = probabilité de confiance</li>
-        </ul>
-      </p>
-    </div>
-  </div>
-
-  <h2>Preuve — régularité de \(\varphi_S\) et union bound</h2>
-
-  <p><b>Hypothèses.</b><br>
-  Soit \(S\) un échantillon de taille \(m\). On définit, pour tout \(h\) dans l'espace des hypothèses \(\mathcal{H}\),
-  </p>
-  Si une fonction f est L-Lipschitz, alors $g(x) = cf(x)$ est (cL)-Lipschitz. Formellement : $\mid g(h) -g(h')\mid = \mid c\mid\mid f(h) - f(h')\mid \leq \mid c \mid L\|h-h'\|$
-
-
-  <p style="text-align:center;">
-  \[
-  \Delta_S^2(h), \qquad \varphi_S(h) := 2m\,\Delta_S^2(h).
-  \]
-  </p>
-
-  <p>On suppose que pour tout \(\delta'\in(0,1)\), on a la propriété suivante :</p>
-
-  <p style="text-align:center;">
-  \[
-  \Pr\!\Big( h\mapsto\Delta_S^2(h)\ \text{est}\ L(m,\delta')\text{-Lipschitz} \Big)\;\ge\;1-\delta',
-  \]
-  </p>
-
-  <p>c'est-à-dire que, avec probabilité au moins \(1-\delta'\),</p>
-
-  <p style="text-align:center;">
-  \[
-  \forall h,h'\in\mathcal{H},\qquad
-  \big|\Delta_S^2(h)-\Delta_S^2(h')\big|
-  \le L(m,\delta')\,\|h-h'\|.
-  \]
-  </p>
-
-  <h3>1. Passage de \(\Delta_S^2\) à \(\varphi_S\)</h3>
-
-  <p>Si, avec probabilité au moins \(1-\delta/2\), la fonction \(h\mapsto\Delta_S^2(h)\) est 
-  \(L\!\big(m,\tfrac{\delta}{2}\big)\)-Lipschitz, alors en multipliant par la constante \(2m\) on obtient :</p>
-
-  <p style="text-align:center;">
-  \[
-  \forall h,h'\in\mathcal{H},\qquad
-  |\varphi_S(h)-\varphi_S(h')|
-  =2m\,|\Delta_S^2(h)-\Delta_S^2(h')|
-  \le 2m\,L\!\Big(m,\tfrac{\delta}{2}\Big)\,\|h-h'\|.
-  \]
-  </p>
-
-  <p>Ainsi \(h\mapsto\varphi_S(h)\) est \(\alpha(m,\delta)\)-Lipschitz avec</p>
-
-  <p style="text-align:center; font-size: 110%;">
-  \[
-  \alpha(m,\delta)=2m\,L\!\Big(m,\tfrac{\delta}{2}\Big).
-  \]
-  </p>
-
-  <h3>2. Union bound avec l'Équation (4)</h3>
-
-  <p>Soit \(E_1 := \{\Delta_S^2 \text{ est } L(m,\tfrac{\delta}{2})\text{-Lipschitz}\}\) et 
-  \(E_2 := \{\text{(Équation (4)) est vérifiée}\}\).  
-  Alors</p>
-
-  <p style="text-align:center;">
-  \(\Pr(E_1)\ge 1-\tfrac{\delta}{2}, \qquad \Pr(E_2)\ge 1-\tfrac{\delta}{2}.\)
-  </p>
-
-  <p>Par l'inégalité de Boole (union bound) :</p>
-
-  <p style="text-align:center;">
-  \[
-  \Pr(E_1\cap E_2) \;\ge\; 1-\delta.
-  \]
-  </p>
-
-  <h3>3. Conclusion</h3>
-
-  <p>Sur l'événement \(E_1\cap E_2\) (de probabilité au moins \(1-\delta\)) :</p>
-
-  <ul>
-    <li>\(\Delta_S^2\) est \(L\!\big(m,\tfrac{\delta}{2}\big)\)-Lipschitz,</li>
-    <li>\(\varphi_S\) est \(\alpha(m,\delta)\)-Lipschitz avec 
-    \(\alpha(m,\delta)=2m\,L\!\big(m,\tfrac{\delta}{2}\big)\),</li>
-    <li>et l'Équation (4) est satisfaite.</li>
-  </ul>
-
-  <p>En réarrangeant l'inégalité de l'Équation (4), on obtient donc la borne désirée valable avec probabilité au moins \(1-\delta\).</p>
-
-  <p style="text-align:right;">\(\square\)</p>
-
-
-  <h2>Petit rappel mathématique</h2>
-  <p>Rappelons la dérivée de Radon-Nykodyn, $h(g) = \frac{d\rho}{d\pi}(g) \Leftrightarrow h\rho = h(g)d\pi(g)$</p>. Si $\rho, \pi$, sont sur le même espace 
-  mesurable et $\rho$ absolument continue respectivement à $\pi$,  $(\rho << \pi)$.
-
-  <p style="text-align:center;">
-    $\mathbf{E}_{y\sim \rho}[\phi(g)] = \int \phi(g)d\rho(g) = \int \phi(g)h(g)d\pi(g) = \mathbf{E}_{g\sim \pi}[h(g)\phi(g)]$
-  </p>
-  <p>Posons $f(u) = ulog(u)$:</p>
-
-  <p style="text-align:center;">
-    $D_f(\rho \| \pi) = \mathbf{E}_{h\sim \rho}f(\frac{d\rho}{d\pi}) = \mathbf{E}_{h\sim \rho}[\frac{d\rho}{d\pi}(h)log(\frac{d\rho}{d\pi}(h))]
-    = \mathbf{E}_{h\sim \pi}[log(\frac{d\rho}{d\pi}(h))] = KL(\rho \| \pi)$ On utilise un changement de mesure.
-  </p>
-
   <!-- Script LaTeX MathJax -->
   <script>
     MathJax = {
@@ -187,5 +366,9 @@
     };
   </script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel" src="app.jsx"></script>
 </body>
 </html>

@@ -155,6 +155,16 @@ body.dark-mode .typography {
   font-family: "JetBrains Mono", monospace;
   line-height: 1.75;
   text-align: center;
+  scroll-margin-top: 1000px;
+  margin-top: 1rem;
+  color: #444;
+}
+
+.content h3 {
+  font-size: 1rem;
+  font-family: "JetBrains Mono", monospace;
+  line-height: 1.75;
+  text-align: left;
   margin-top: 1rem;
   color: #444;
 }
@@ -395,4 +405,680 @@ body.dark-mode .project-content p {
    -1px 0 #00fff9;
 }
 
+/* ==========================
+   Table of Contents (TOC)
+========================== */
+
+.toc {
+  max-width: 500px;
+  margin: 2rem auto 4rem;
+  padding: 1.5rem 1.8rem;
+
+  font-family: "JetBrains Mono", monospace;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(6px);
+
+  position: relative;
+}
+
+
+/* Dark mode */
+body.dark-mode .toc {
+  background: rgba(20, 20, 20, 0.85);
+  box-shadow: 0 10px 30px rgba(0,0,0,.6);
+}
+
+/* Title */
+.toc-title {
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  text-align: center;
+  margin-bottom: 1.2rem;
+  position: relative;
+}
+
+/* Underline */
+.toc-title::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 2px;
+  margin: .8rem auto 0;
+  background: linear-gradient(90deg, #ff004c, #00fff9);
+}
+
+/* List */
+.toc ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.toc li {
+  margin: .6rem 0;
+}
+
+/* Links */
+.toc a {
+  color: #4b0082;
+  text-decoration: none;
+  font-size: .95rem;
+  position: relative;
+  padding-left: 1rem;
+  transition: color .2s;
+}
+
+/* Accent dot */
+.toc a::before {
+  content: "›";
+  position: absolute;
+  left: 0;
+  color: #00bcd4;
+  transition: transform .2s;
+}
+
+.toc a:hover {
+  text-shadow:
+    1px 0 #ff004c,
+   -1px 0 #00fff9;
+}
+
+.toc a:hover::before {
+  transform: translateX(3px);
+}
+
+/* Dark mode links */
+body.dark-mode .toc a {
+  color: #9ecbff;
+}
+
+
+/* ==========================
+   Theorem Boxes
+========================== */
+
+.theorem {
+  position: relative;
+  margin: 2.5rem 0;
+  padding: 1.8rem 2rem 1.5rem 2rem;
+  
+  background: linear-gradient(135deg, rgba(255, 240, 245, 0.5), rgba(240, 248, 255, 0.5));
+  border-left: 4px solid #ff004c;
+  border-radius: 8px;
+  
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  font-family: "JetBrains Mono", monospace;
+}
+
+body.dark-mode .theorem {
+  background: linear-gradient(135deg, rgba(50, 20, 30, 0.6), rgba(20, 30, 50, 0.6));
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Label "Theorem" ou "Définition" */
+.theorem::before {
+  content: "Theorem";
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  
+  padding: 0.3rem 1rem;
+  background: linear-gradient(135deg, #ff004c, #00fff9);
+  color: #fff;
+  
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.theorem p,
+.theorem {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 1rem;
+  line-height: 1.8;
+  text-align: left;
+}
+
+.theorem p {
+  margin-top: 0.5rem;
+  color: #2c2c2c;
+}
+
+body.dark-mode .theorem p {
+  color: #e0e0e0;
+}
+
+/* Variantes pour différents types de boîtes */
+.definition {
+  position: relative;
+  margin: 2.5rem 0;
+  padding: 1.8rem 2rem 1.5rem 2rem;
+  
+  background: linear-gradient(135deg, rgba(240, 255, 250, 0.5), rgba(245, 250, 255, 0.5));
+  border-left: 4px solid #00bcd4;
+  border-radius: 8px;
+  
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  font-family: "JetBrains Mono", monospace;
+}
+
+body.dark-mode .definition {
+  background: linear-gradient(135deg, rgba(20, 40, 35, 0.6), rgba(20, 30, 40, 0.6));
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.definition::before {
+  content: "Définition";
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  
+  padding: 0.3rem 1rem;
+  background: linear-gradient(135deg, #00bcd4, #00fff9);
+  color: #fff;
+  
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.definition p {
+  margin-top: 0.5rem;
+  line-height: 1.8;
+  color: #2c2c2c;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 1rem;
+  text-align: left;
+}
+
+body.dark-mode .definition p {
+  color: #e0e0e0;
+}
+
+.lemma {
+  position: relative;
+  margin: 2.5rem 0;
+  padding: 1.8rem 2rem 1.5rem 2rem;
+  
+  background: linear-gradient(135deg, rgba(250, 245, 255, 0.5), rgba(248, 245, 255, 0.5));
+  border-left: 4px solid #9c27b0;
+  border-radius: 8px;
+  
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  font-family: "JetBrains Mono", monospace;
+}
+
+body.dark-mode .lemma {
+  background: linear-gradient(135deg, rgba(40, 20, 50, 0.6), rgba(30, 25, 40, 0.6));
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.lemma::before {
+  content: "Lemme";
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  
+  padding: 0.3rem 1rem;
+  background: linear-gradient(135deg, #9c27b0, #ce93d8);
+  color: #fff;
+  
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.lemma p {
+  margin-top: 0.5rem;
+  line-height: 1.8;
+  color: #2c2c2c;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 1rem;
+  text-align: left;
+}
+
+body.dark-mode .lemma p {
+  color: #e0e0e0;
+}
+
+.proof {
+  margin: 2rem 0;
+  padding: 1.5rem 2rem;
+  border-left: 3px dashed rgba(0, 0, 0, 0.2);
+  background: rgba(250, 250, 250, 0.5);
+  font-style: italic;
+}
+
+body.dark-mode .proof {
+  border-left-color: rgba(255, 255, 255, 0.2);
+  background: rgba(30, 30, 30, 0.5);
+}
+
+.proof::before {
+  content: "Preuve.";
+  display: block;
+  font-weight: 700;
+  font-style: normal;
+  margin-bottom: 0.8rem;
+  color: #666;
+}
+
+body.dark-mode .proof::before {
+  color: #aaa;
+}
+
+
 #accueil, #research-interests, #projects, #contact { scroll-margin-top: 100px; } .projects { position: relative; margin-left: 1rem; padding-left: 2rem; border-left: 2px solid rgba(0,0,0,.1); }
+#accueil, 
+#research-interests, 
+#projects, 
+#contact,
+#whyThisTutorial,
+#introduction,
+#generalization-bounds,
+#notation,
+#preuve-–-régularité-de-φ_s-et-union-bound,
+#petit-rappel-mathématique,
+.content h2,
+.content h3 {
+  scroll-margin-top: 100px; /* ou 110px pour plus d'espace */
+}
+
+/* Container principal */
+.viz-container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Titre avec effet glitch */
+.viz-title {
+    position: relative;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-family: "JetBrains Mono", monospace;
+}
+
+.viz-title::before,
+.viz-title::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.viz-title::before {
+    color: #ff004c;
+    transform: translate(2px, 0);
+    z-index: -1;
+}
+
+.viz-title::after {
+    color: #00fff9;
+    transform: translate(-2px, 0);
+    z-index: -1;
+}
+
+.viz-subtitle {
+    text-align: center;
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 2rem;
+    font-family: "JetBrains Mono", monospace;
+}
+
+body.dark-mode .viz-subtitle {
+    color: #999;
+}
+
+/* Contrôles */
+.controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #ff004c, #00fff9);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,.2);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.8);
+    color: #444;
+}
+
+body.dark-mode .btn-secondary {
+    background: rgba(30, 30, 30, 0.9);
+    color: #eee;
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+
+.progress-indicator {
+    padding: 0.8rem 1.5rem;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(6px);
+    border-radius: 6px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+}
+
+body.dark-mode .progress-indicator {
+    background: rgba(30, 30, 30, 0.85);
+    box-shadow: 0 2px 8px rgba(0,0,0,.5);
+}
+
+/* Grid des visualisations */
+.viz-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Grid horizontal pour forcer côte à côte */
+.viz-grid-horizontal {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 1200px) {
+    .viz-grid-horizontal {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Cartes */
+.viz-card {
+    position: relative;
+    padding: 1.5rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    transition: transform .25s, box-shadow .25s;
+    overflow: hidden;
+}
+
+body.dark-mode .viz-card {
+    background: rgba(20, 20, 20, 0.85);
+    box-shadow: 0 10px 30px rgba(0,0,0,.6);
+}
+
+.viz-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #ff004c, #00fff9);
+}
+
+.viz-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,.15);
+}
+
+body.dark-mode .viz-card:hover {
+    box-shadow: 0 20px 40px rgba(0,0,0,.8);
+}
+
+.viz-card-title {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #444;
+}
+
+body.dark-mode .viz-card-title {
+    color: #eee;
+}
+
+.viz-card-description {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #666;
+    margin-top: 0.8rem;
+}
+
+body.dark-mode .viz-card-description {
+    color: #999;
+}
+
+/* Carte pleine largeur */
+.viz-card-full {
+    grid-column: 1 / -1;
+}
+
+/* Métriques */
+.metrics-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.metric-box {
+    padding: 1rem;
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+
+.metric-box:hover {
+    transform: translateY(-2px);
+}
+
+.metric-box-green {
+    background: rgba(16, 185, 129, 0.1);
+    border-left: 3px solid #10b981;
+}
+
+.metric-box-red {
+    background: rgba(239, 68, 68, 0.1);
+    border-left: 3px solid #ef4444;
+}
+
+.metric-box-blue {
+    background: rgba(59, 130, 246, 0.1);
+    border: 2px solid #3b82f6;
+}
+
+body.dark-mode .metric-box-green {
+    background: rgba(16, 185, 129, 0.15);
+}
+
+body.dark-mode .metric-box-red {
+    background: rgba(239, 68, 68, 0.15);
+}
+
+body.dark-mode .metric-box-blue {
+    background: rgba(59, 130, 246, 0.15);
+}
+
+.metric-label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.metric-value {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
+.metric-hint {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+/* Explication du graphique */
+.graph-explanation {
+    margin-top: 1.5rem;
+    padding: 1.2rem;
+    background: rgba(248, 250, 252, 0.8);
+    border-radius: 8px;
+}
+
+body.dark-mode .graph-explanation {
+    background: rgba(30, 30, 35, 0.8);
+}
+
+.graph-explanation h4 {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+    color: #444;
+}
+
+body.dark-mode .graph-explanation h4 {
+    color: #eee;
+}
+
+.graph-explanation ul {
+    list-style: none;
+    padding: 0;
+}
+
+.graph-explanation li {
+    display: flex;
+    align-items: start;
+    gap: 0.8rem;
+    margin-bottom: 0.6rem;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.graph-explanation .bullet {
+    font-size: 1.2rem;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.graph-explanation .warning {
+    margin-top: 0.8rem;
+    font-style: italic;
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+/* Intuition box */
+.intuition-box {
+    position: relative;
+    margin-top: 2rem;
+    padding: 1.8rem 2rem 1.5rem 2rem;
+    background: linear-gradient(135deg, rgba(240, 248, 255, 0.5), rgba(240, 255, 250, 0.5));
+    border-left: 4px solid #00bcd4;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+body.dark-mode .intuition-box {
+    background: linear-gradient(135deg, rgba(20, 30, 40, 0.6), rgba(20, 40, 35, 0.6));
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.intuition-box::before {
+    content: "Intuition Clé";
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    padding: 0.3rem 1rem;
+    background: linear-gradient(135deg, #00bcd4, #00fff9);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.intuition-box p {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin-top: 0.8rem;
+    color: #2c2c2c;
+}
+
+body.dark-mode .intuition-box p {
+    color: #e0e0e0;
+}
+
+.intuition-box p:first-of-type {
+    margin-top: 0;
+}
+
+.intuition-box .emphasis {
+    font-weight: 700;
+}
+
+/* Recharts customization */
+.recharts-text {
+    font-family: "JetBrains Mono", monospace !important;
+    font-size: 0.75rem;
+}
+
+.recharts-legend-item-text {
+    font-family: "JetBrains Mono", monospace !important;
+    font-size: 0.85rem !important;
+}
+
+body.dark-mode .recharts-text {
+    fill: #ccc !important;
+}
+
+body.dark-mode .recharts-cartesian-grid-horizontal line,
+body.dark-mode .recharts-cartesian-grid-vertical line {
+    stroke: rgba(255, 255, 255, 0.1) !important;
+}
