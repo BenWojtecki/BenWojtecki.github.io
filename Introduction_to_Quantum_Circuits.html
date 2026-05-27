@@ -81,7 +81,15 @@
         This normalization condition ensures that the total probability of all possible outcomes of a measurement is equal to 1. The state of a qubit can be visualized on the Bloch sphere, where the north pole 
         corresponds to $|0\rangle$ and the south pole corresponds to $|1\rangle$. The superposition of these states allows quantum computers to perform certain computations more efficiently than classical computers, 
         making them a powerful tool for tasks such as cryptography, optimization, and simulation of quantum systems.
-      
+
+        An important property of quantum states is that they can be entangled, meaning that the state of one qubit can be correlated with the state of another qubit in such a way that the state of the whole system cannot
+        be described as a product of the states of the individual qubits. This phenomenon is a key resource for quantum computation and quantum communication, enabling protocols such as quantum teleportation and superdense coding.
+        For instance, consider the $2$-qubit state that is in the following state:
+        $$|\psi\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle)$$
+        Initially neither of the two qubits has a classical value $|0\rangle$ or $|1\rangle$. However, if we measure the first qubit and observe, say, a $|0\rangle$, then the whole state collapses to $|00\rangle$. 
+        Thus observing the first qubit immediately fixes also the second, unobserved qubit to a classical value. Since the two qubits that make up the system may be far apart, this example illustrates some of the non-local effects
+        that quantum systems can
+exhibit. 
       <h2 id="BASIC_GATE">Basic quantum gates</h2>
     
   <!-- Script LaTeX MathJax -->
