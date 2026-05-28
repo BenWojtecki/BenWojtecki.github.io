@@ -1158,3 +1158,136 @@ body.dark-mode .recharts-cartesian-grid-vertical line {
   margin-top: 30px;
   font-size: 18px;
 }
+
+.quantum-simulator {
+  max-width: 1000px;
+  margin: auto;
+  padding: 30px;
+  border-radius: 18px;
+  background: #f5f5f5;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* toggle */
+.mode-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* switch */
+.switch {
+  position: relative;
+  width: 50px;
+  height: 26px;
+}
+
+.switch input { display:none; }
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: #444;
+  border-radius: 50px;
+}
+
+.slider:before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 4px;
+  top: 4px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+/* controls */
+.sim-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.sim-controls button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #222;
+  color: white;
+  cursor: pointer;
+}
+
+/* layout */
+.sim-visuals {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+/* bloch */
+#blochCanvas {
+  background: white;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+}
+
+/* history */
+.gate-history div {
+  background: #222;
+  color: white;
+  padding: 6px;
+  margin: 5px;
+  border-radius: 6px;
+}
+
+/* probabilities */
+.prob-bar {
+  width: 240px;
+  height: 12px;
+  background: #ddd;
+  border-radius: 10px;
+  margin: 6px auto;
+}
+
+.prob-fill {
+  height: 100%;
+  background: #222;
+}
+
+button {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+/* Reset button special style */
+button.reset-btn {
+  background: #e74c3c;
+  color: white;
+}
+
+button.reset-btn:hover {
+  background: #c0392b;
+}

@@ -1,217 +1,202 @@
-let state = [
-  { re: 1, im: 0 },
-  { re: 0, im: 0 }
-];
-
-let gateHistory = [];
+let mode = 1;
+let history = [];
 
 const canvas = document.getElementById("blochCanvas");
 const ctx = canvas.getContext("2d");
 
-function complexAdd(a, b) {
-  return {
-    re: a.re + b.re,
-    im: a.im + b.im
-  };
+/* STATES */
+let state1 = [
+  {re:1,im:0},
+  {re:0,im:0}
+];
+
+let state2 = [
+  {re:1,im:0},
+  {re:0,im:0},
+  {re:0,im:0},
+  {re:0,im:0}
+];
+
+/* MODE */
+function toggleMode(){
+  mode = document.getElementById("modeSwitch").checked ? 2 : 1;
+  history = [];
+  renderControls();
+  resetState();
 }
 
-function complexMul(a, b) {
-  return {
-    re: a.re * b.re - a.im * b.im,
-    im: a.re * b.im + a.im * b.re
-  };
+/* CONTROLS */
+function renderControls(){
+
+  const div = document.getElementById("controls");
+
+  const gates = mode === 1
+    ? ["X","Y","Z","H","S","T"]
+    : ["X0","X1","CNOT"];
+
+  div.innerHTML = gates.map(g =>
+    `<button onclick="applyGate('${g}')">${g}</button>`
+  ).join("");
 }
 
-function magnitudeSquared(z) {
-  return z.re * z.re + z.im * z.im;
+/* MATH */
+function norm(z){
+  return z.re*z.re + z.im*z.im;
 }
 
-function applyMatrix(matrix) {
+function add(a,b){ return {re:a.re+b.re, im:a.im+b.im}; }
+function mul(a,b){ return {re:a.re*b.re - a.im*b.im, im:a.re*b.im + a.im*b.re}; }
 
-  const a = state[0];
-  const b = state[1];
+/* APPLY */
+function applyGate(g){
+  history.push(g);
+  updateHistory();
 
-  const new0 = complexAdd(
-    complexMul(matrix[0][0], a),
-    complexMul(matrix[0][1], b)
-  );
+  if(mode === 1) apply1(g);
+  else apply2(g);
 
-  const new1 = complexAdd(
-    complexMul(matrix[1][0], a),
-    complexMul(matrix[1][1], b)
-  );
-
-  state = [new0, new1];
-
-  updateDisplay();
-  drawBlochSphere();
+  refreshUI();
 }
 
-function applyGate(gate) {
+/* 1 QUBIT */
+function apply1(g){
 
-  const invSqrt2 = 1 / Math.sqrt(2);
+  const s = 1/Math.sqrt(2);
 
   const gates = {
+    X:[[ {re:0,im:0},{re:1,im:0} ],
+       [ {re:1,im:0},{re:0,im:0} ]],
 
-    X: [
-      [{re:0, im:0}, {re:1, im:0}],
-      [{re:1, im:0}, {re:0, im:0}]
-    ],
+    Y:[[ {re:0,im:0},{re:0,im:-1} ],
+       [ {re:0,im:1},{re:0,im:0} ]],
 
-    Y: [
-      [{re:0, im:0}, {re:0, im:-1}],
-      [{re:0, im:1}, {re:0, im:0}]
-    ],
+    Z:[[ {re:1,im:0},{re:0,im:0} ],
+       [ {re:0,im:0},{re:-1,im:0} ]],
 
-    Z: [
-      [{re:1, im:0}, {re:0, im:0}],
-      [{re:0, im:0}, {re:-1, im:0}]
-    ],
+    H:[[ {re:s,im:0},{re:s,im:0} ],
+       [ {re:s,im:0},{re:-s,im:0} ]],
 
-    H: [
-      [{re:invSqrt2, im:0}, {re:invSqrt2, im:0}],
-      [{re:invSqrt2, im:0}, {re:-invSqrt2, im:0}]
-    ]
+    S:[[ {re:1,im:0},{re:0,im:0} ],
+       [ {re:0,im:0},{re:0,im:1} ]],
+
+    T:[[ {re:1,im:0},{re:0,im:0} ],
+       [ {re:0,im:0},{re:Math.SQRT1_2,im:Math.SQRT1_2} ]]
   };
 
-  gateHistory.push(gate);
+  const m = gates[g];
+  if(m){
+    const a = state1[0], b = state1[1];
 
-  updateGateHistory();
+    state1 = [
+      add(mul(m[0][0],a), mul(m[0][1],b)),
+      add(mul(m[1][0],a), mul(m[1][1],b))
+    ];
+  }
 
-  applyMatrix(gates[gate]);
+  drawBloch();
 }
 
-function formatComplex(z) {
+/* 2 QUBITS */
+function apply2(g){
 
-  const re = Math.round(z.re * 1000) / 1000;
-  const im = Math.round(z.im * 1000) / 1000;
+  if(g === "CNOT"){
+    state2 = [state2[0], state2[1], state2[3], state2[2]];
+  }
 
-  if (im === 0) return `${re}`;
+  if(g === "X0"){
+    [state2[0],state2[2]] = [state2[2],state2[0]];
+    [state2[1],state2[3]] = [state2[3],state2[1]];
+  }
 
-  if (re === 0) return `${im}i`;
-
-  return `${re} + ${im}i`;
-}
-
-function updateDisplay() {
-
-  const a = state[0];
-  const b = state[1];
-
-  document.getElementById("state-vector").innerHTML =
-    `
-    $$|\\psi\\rangle =
-    (${formatComplex(a)})|0\\rangle +
-    (${formatComplex(b)})|1\\rangle
-    $$
-    `;
-
-  const p0 = (magnitudeSquared(a) * 100).toFixed(2);
-  const p1 = (magnitudeSquared(b) * 100).toFixed(2);
-
-  document.getElementById("probabilities").innerHTML =
-    `
-    <div>
-      <strong>P(0)</strong>
-      <div style="background:#ddd;height:20px;border-radius:10px;">
-        <div style="width:${p0}%;height:20px;background:#4caf50;border-radius:10px;"></div>
-      </div>
-      ${p0}%
-    </div>
-
-    <br>
-
-    <div>
-      <strong>P(1)</strong>
-      <div style="background:#ddd;height:20px;border-radius:10px;">
-        <div style="width:${p1}%;height:20px;background:#2196f3;border-radius:10px;"></div>
-      </div>
-      ${p1}%
-    </div>
-    `;
-
-  if (window.MathJax) {
-    MathJax.typesetPromise();
+  if(g === "X1"){
+    [state2[0],state2[1]] = [state2[1],state2[0]];
+    [state2[2],state2[3]] = [state2[3],state2[2]];
   }
 }
 
-function updateGateHistory() {
-
-  const container = document.getElementById("gate-sequence");
-
-  container.innerHTML = "";
-
-  gateHistory.forEach(gate => {
-
-    const div = document.createElement("div");
-
-    div.className = "gate-box";
-
-    div.innerText = gate;
-
-    container.appendChild(div);
-  });
+/* UI SWITCH */
+function refreshUI(){
+  if(mode === 1) update1();
+  else update2();
 }
 
-function drawBlochSphere() {
+/* DISPLAY 1Q */
+function update1(){
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const p0 = norm(state1[0]);
+  const p1 = norm(state1[1]);
 
-  const centerX = 200;
-  const centerY = 200;
-  const radius = 140;
+  document.getElementById("state-vector").innerHTML =
+    `|ψ⟩ = ${state1[0].re.toFixed(2)}|0⟩ + ${state1[1].re.toFixed(2)}|1⟩`;
 
-  // Sphere
+  document.getElementById("probabilities").innerHTML = `
+    P(0)
+    <div class="prob-bar"><div class="prob-fill" style="width:${p0*100}%"></div></div>
+
+    P(1)
+    <div class="prob-bar"><div class="prob-fill" style="width:${p1*100}%"></div></div>
+  `;
+}
+
+/* DISPLAY 2Q */
+function update2(){
+
+  const labels=["00","01","10","11"];
+
+  document.getElementById("state-vector").innerHTML =
+    state2.map((z,i)=> `${z.re.toFixed(2)}|${labels[i]}⟩`).join(" + ");
+
+  document.getElementById("probabilities").innerHTML =
+    state2.map((z,i)=>`
+      P(${labels[i]})
+      <div class="prob-bar"><div class="prob-fill" style="width:${norm(z)*100}%"></div></div>
+    `).join("");
+}
+
+/* HISTORY */
+function updateHistory(){
+  document.getElementById("gate-sequence").innerHTML =
+    history.map(h=>`<div>${h}</div>`).join("");
+}
+
+/* BLOCH */
+function drawBloch(){
+
+  ctx.clearRect(0,0,400,400);
+
   ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+  ctx.arc(200,200,120,0,Math.PI*2);
   ctx.stroke();
 
-  // Axes
-  ctx.beginPath();
-  ctx.moveTo(centerX, centerY - radius);
-  ctx.lineTo(centerX, centerY + radius);
-
-  ctx.moveTo(centerX - radius, centerY);
-  ctx.lineTo(centerX + radius, centerY);
-
-  ctx.strokeStyle = "#888";
-  ctx.stroke();
-
-  // Labels
-  ctx.fillStyle = "black";
-  ctx.font = "18px Arial";
-
-  ctx.fillText("|0⟩", centerX - 15, centerY - radius - 10);
-  ctx.fillText("|1⟩", centerX - 15, centerY + radius + 25);
-
-  const p0 = magnitudeSquared(state[0]);
-  const p1 = magnitudeSquared(state[1]);
-
-  const z = p0 - p1;
-
-  const pointY = centerY - z * radius;
+  const z = norm(state1[0]) - norm(state1[1]);
 
   ctx.beginPath();
-  ctx.arc(centerX, pointY, 10, 0, 2 * Math.PI);
-
-  ctx.fillStyle = "#e91e63";
+  ctx.arc(200,200 - z*120,8,0,Math.PI*2);
   ctx.fill();
 }
 
-function resetState() {
+/* RESET */
+function resetState(){
 
-  state = [
-    { re: 1, im: 0 },
-    { re: 0, im: 0 }
-  ];
+  history = [];
 
-  gateHistory = [];
+  if(mode === 1){
+    state1 = [{re:1,im:0},{re:0,im:0}];
+  } else {
+    state2 = [
+      {re:1,im:0},
+      {re:0,im:0},
+      {re:0,im:0},
+      {re:0,im:0}
+    ];
+  }
 
-  updateGateHistory();
-
-  updateDisplay();
-
-  drawBlochSphere();
+  updateHistory();
+  refreshUI();
+  drawBloch();
 }
 
-resetState();
+/* INIT */
+renderControls();
+refreshUI();
+drawBloch();

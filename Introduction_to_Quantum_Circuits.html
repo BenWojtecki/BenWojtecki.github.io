@@ -269,24 +269,35 @@ exhibit.
           These gates allow continuous transformations of qubit states and are heavily used in quantum algorithms and quantum hardware implementations.
         </p>
 
+    
       <h2 id="SIMULATOR">Quantum Gate Simulator</h2>
+        <p>
+          Note: Some quantum gates (such as Z, S, and T) only affect the phase of the quantum state. Since phase is not directly visible in this simulator,
+           their effect may not appear, even though they are mathematically applied.
+        </p>
+      <div class="mode-toggle">
+        <span>1 Qubit</span>
+
+        <label class="switch">
+          <input type="checkbox" id="modeSwitch" onchange="toggleMode()">
+          <span class="slider"></span>
+        </label>
+
+        <span>2 Qubits</span>
+
+        <button onclick="resetState()">Reset</button>
+      </div>
 
       <div class="quantum-simulator">
-        <div class="sim-controls">
-          <button onclick="applyGate('X')">Pauli-X</button>
-          <button onclick="applyGate('Y')">Pauli-Y</button>
-          <button onclick="applyGate('Z')">Pauli-Z</button>
-          <button onclick="applyGate('H')">Hadamard</button>
-          <button onclick="resetState()">Reset</button>
-        </div>
+
+        <div class="sim-controls" id="controls"></div>
 
         <div class="sim-visuals">
 
           <canvas id="blochCanvas" width="400" height="400"></canvas>
 
           <div class="gate-history">
-            <h3>Applied Gates</h3>
-
+            <h3>History</h3>
             <div id="gate-sequence"></div>
           </div>
 
@@ -294,24 +305,15 @@ exhibit.
 
         <div class="sim-state">
 
-          <h3>Current Quantum State</h3>
+          <h3>State</h3>
+          <div id="state-vector"></div>
 
-          <p id="state-vector">
-            $|\psi\rangle = 1|0\rangle + 0|1\rangle$
-          </p>
-
-          <h3>Measurement Probabilities</h3>
-
-          <div id="probabilities">
-            P(0) = 100% <br>
-            P(1) = 0%
-          </div>
+          <h3>Probabilities</h3>
+          <div id="probabilities"></div>
 
         </div>
 
       </div>
-
-
 
   <!-- Script LaTeX MathJax -->
   <script>
