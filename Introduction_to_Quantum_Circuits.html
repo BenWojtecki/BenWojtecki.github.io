@@ -29,6 +29,7 @@
       <li><a href="#whyThisTutorial">Why this tutorial</a></li>
       <li><a href="#introduction">Introduction</a></li>
       <li><a href="#BASIC_GATE">Basic quantum gates</a></li>
+      <li><a href="#SIMULATOR">Quantum Gate Simulator</a></li>
 
     </ul>
   </nav>
@@ -99,9 +100,10 @@ exhibit.
         transpose of $U$ and $I$ is the identity matrix. Let's consider some of the most common quantum gates.
       </p>
     
-      <h3>Pauli Gates</h3>
+      <h3>Single qubit</h3>
       <p>
-        The Pauli gates are a set of three single qubit gates that are fundamental in quantum computing. It equivalent to the classical NOT gate, which flips the value of a bit. The Pauli-X gate is represented by the matrix:
+        The Pauli gates are a set of three single qubit gates that are fundamental in quantum computing. It equivalent to the classical NOT gate, which flips the value of a bit. The Pauli-X gate, is equivalent to the classical NOT gate,
+        and it is represented by the matrix:
         
         $$X = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}$$
         
@@ -130,6 +132,187 @@ exhibit.
         These gates are essential for manipulating qubits and are used in various quantum algorithms and protocols. For instance, the Pauli-Z gate can be used to create a phase shift in a qubit, while the Pauli-Y gate can be used 
         to create a superposition of states. Together, the Pauli gates form a complete set of single qubit gates, meaning that any single qubit operation can be expressed as a combination of these gates.
       </p>
+
+        <p>
+          The Hadamard gate is one of the most important single qubit gates in quantum computing because it creates superposition states. 
+          It transforms a basis state into an equal superposition of the basis states. The Hadamard gate is represented by the matrix:
+
+          $$H = \frac{1}{\sqrt{2}}
+          \begin{pmatrix}
+          1 & 1 \\
+          1 & -1
+          \end{pmatrix}$$
+
+          Applying the Hadamard gate to the state $|0\rangle$ gives:
+
+          $$H|0\rangle =
+          \frac{1}{\sqrt{2}}
+          \begin{pmatrix}
+          1 & 1 \\
+          1 & -1
+          \end{pmatrix}
+          \begin{pmatrix}
+          1 \\
+          0
+          \end{pmatrix}
+          =
+          \frac{1}{\sqrt{2}}
+          \begin{pmatrix}
+          1 \\
+          1
+          \end{pmatrix}
+          =
+          \frac{|0\rangle + |1\rangle}{\sqrt{2}}$$
+
+          Similarly, applying the Hadamard gate to the state $|1\rangle$ gives:
+
+          $$H|1\rangle =
+          \frac{1}{\sqrt{2}}
+          \begin{pmatrix}
+          1 & 1 \\
+          1 & -1
+          \end{pmatrix}
+          \begin{pmatrix}
+          0 \\
+          1
+          \end{pmatrix}
+          =
+          \frac{1}{\sqrt{2}}
+          \begin{pmatrix}
+          1 \\
+          -1
+          \end{pmatrix}
+          =
+          \frac{|0\rangle - |1\rangle}{\sqrt{2}}$$
+
+          The Hadamard gate is widely used in quantum algorithms because it allows a qubit to exist in multiple states simultaneously. 
+          It is commonly used at the beginning of quantum circuits to initialize superpositions.
+        </p>
+
+      <h3>Phase Gates</h3>
+        <p>
+          Phase gates modify the relative phase between quantum states without changing their probabilities. 
+          One common example is the Phase-S gate, represented by:
+
+          $$S =
+          \begin{pmatrix}
+          1 & 0 \\
+          0 & i
+          \end{pmatrix}$$
+
+          Applying the S gate to a general qubit state leaves the amplitude of $|0\rangle$ unchanged while adding a phase factor of $i$ to the $|1\rangle$ component.
+
+          Another important phase gate is the T gate:
+
+          $$T =
+          \begin{pmatrix}
+          1 & 0 \\
+          0 & e^{i\pi/4}
+          \end{pmatrix}$$
+
+          The T gate introduces a phase shift of $\pi/4$ and is essential for universal quantum computation.
+        </p>
+
+      <h3>Controlled Gates</h3>
+        <p>
+          Controlled gates operate on multiple qubits. The most common example is the Controlled-NOT gate (CNOT). 
+          It uses one qubit as a control and another as a target. The target qubit is flipped only if the control qubit is in the state $|1\rangle$.
+
+          The CNOT gate is represented by the matrix:
+
+          $$\text{CNOT} =
+          \begin{pmatrix}
+          1 & 0 & 0 & 0 \\
+          0 & 1 & 0 & 0 \\
+          0 & 0 & 0 & 1 \\
+          0 & 0 & 1 & 0
+          \end{pmatrix}$$
+
+          For example:
+
+          $$\text{CNOT}|10\rangle = |11\rangle$$
+
+          $$\text{CNOT}|11\rangle = |10\rangle$$
+
+          The CNOT gate is fundamental for creating entanglement between qubits, which is a key resource in quantum computing.
+        </p>
+
+      <h3>Rotation Gates</h3>
+        <p>
+          Rotation gates perform rotations of a qubit state around the axes of the Bloch sphere. 
+          The most common rotation gates are $R_x$, $R_y$, and $R_z$.
+
+          The rotation around the X-axis is defined as:
+
+          $$R_x(\theta) =
+          \begin{pmatrix}
+          \cos(\theta/2) & -i\sin(\theta/2) \\
+          -i\sin(\theta/2) & \cos(\theta/2)
+          \end{pmatrix}$$
+
+          Similarly, the rotation around the Y-axis is:
+
+          $$R_y(\theta) =
+          \begin{pmatrix}
+          \cos(\theta/2) & -\sin(\theta/2) \\
+          \sin(\theta/2) & \cos(\theta/2)
+          \end{pmatrix}$$
+
+          And the rotation around the Z-axis is:
+
+          $$R_z(\theta) =
+          \begin{pmatrix}
+          e^{-i\theta/2} & 0 \\
+          0 & e^{i\theta/2}
+          \end{pmatrix}$$
+
+          These gates allow continuous transformations of qubit states and are heavily used in quantum algorithms and quantum hardware implementations.
+        </p>
+
+      <h2 id="SIMULATOR">Quantum Gate Simulator</h2>
+
+      <div class="quantum-simulator">
+        <div class="sim-controls">
+          <button onclick="applyGate('X')">Pauli-X</button>
+          <button onclick="applyGate('Y')">Pauli-Y</button>
+          <button onclick="applyGate('Z')">Pauli-Z</button>
+          <button onclick="applyGate('H')">Hadamard</button>
+          <button onclick="resetState()">Reset</button>
+        </div>
+
+        <div class="sim-visuals">
+
+          <canvas id="blochCanvas" width="400" height="400"></canvas>
+
+          <div class="gate-history">
+            <h3>Applied Gates</h3>
+
+            <div id="gate-sequence"></div>
+          </div>
+
+        </div>
+
+        <div class="sim-state">
+
+          <h3>Current Quantum State</h3>
+
+          <p id="state-vector">
+            $|\psi\rangle = 1|0\rangle + 0|1\rangle$
+          </p>
+
+          <h3>Measurement Probabilities</h3>
+
+          <div id="probabilities">
+            P(0) = 100% <br>
+            P(1) = 0%
+          </div>
+
+        </div>
+
+      </div>
+
+
+
   <!-- Script LaTeX MathJax -->
   <script>
     MathJax = {
@@ -143,6 +326,7 @@ exhibit.
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script type="text/babel" src="app.jsx"></script>
+  <script type="text/babel" src="app.jsx"></script>
+  <script src="quantumSimulator.js"></script>
 </body>
 </html>

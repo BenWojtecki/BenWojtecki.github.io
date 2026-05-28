@@ -1082,3 +1082,79 @@ body.dark-mode .recharts-cartesian-grid-horizontal line,
 body.dark-mode .recharts-cartesian-grid-vertical line {
     stroke: rgba(255, 255, 255, 0.1) !important;
 }
+
+.quantum-simulator {
+  margin-top: 40px;
+  padding: 30px;
+  border-radius: 16px;
+  background: #f5f5f5;
+  text-align: center;
+}
+
+/* Center buttons */
+.sim-controls {
+  margin: 25px 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sim-controls button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #222;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 15px;
+}
+
+.sim-controls button:hover {
+  background: #444;
+}
+
+/* Center Bloch sphere section */
+.sim-visuals {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+/* Bloch canvas */
+#blochCanvas {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  margin-bottom: 25px;
+}
+
+/* Gate history */
+.gate-history {
+  text-align: center;
+}
+
+#gate-sequence {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.gate-box {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #222;
+  color: white;
+  font-weight: bold;
+}
+
+/* State display */
+.sim-state {
+  margin-top: 30px;
+  font-size: 18px;
+}
