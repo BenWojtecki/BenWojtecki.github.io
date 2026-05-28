@@ -76,8 +76,10 @@
         In classical computation, the unit of information is the bit, which can take values 0 or 1. In quantum computation, this unit is a quantum bit, or qubit, which is a superposition of $0$ and
         $1$. Consider a system with $2$ basis states, call them $|0\rangle$ and $|1\rangle$. We identify these basis states with the two orthogonal vectors $|0\rangle = \begin{pmatrix} 1 \\ 0 \end{pmatrix}$ 
         and $|1\rangle = \begin{pmatrix} 0 \\ 1 \end{pmatrix}$. A qubit is a quantum state of the form:
-        $$|\psi\rangle = \alpha |0\rangle + \beta |1\rangle$$ 
-        According to the postulates of quantum mechanics, the state $|\psi\rangle$ must be normalized, meaning that the sum of the squares of the magnitudes of its amplitudes must be $|\alpha|^2 + |\beta|^2 = 1$.
+
+        $$|\psi\rangle = \alpha_0 |0\rangle + \alpha_1 |1\rangle$$ 
+        
+        According to the postulates of quantum mechanics, the state $|\psi\rangle$ must be normalized, meaning that the sum of the squares of the magnitudes of its amplitudes must be $|\alpha_0|^2 + |\alpha_1|^2 = 1$.
         This normalization condition ensures that the total probability of all possible outcomes of a measurement is equal to 1. The state of a qubit can be visualized on the Bloch sphere, where the north pole 
         corresponds to $|0\rangle$ and the south pole corresponds to $|1\rangle$. The superposition of these states allows quantum computers to perform certain computations more efficiently than classical computers, 
         making them a powerful tool for tasks such as cryptography, optimization, and simulation of quantum systems.
@@ -98,6 +100,32 @@ exhibit.
       </p>
     
       <h3>Pauli Gates</h3>
+      <p>
+        The Pauli gates are a set of three single qubit gates that are fundamental in quantum computing. It equivalent to the classical NOT gate, which flips the value of a bit. The Pauli-X gate is represented by the matrix:
+        
+        $$X = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}$$
+        
+        When applied to a qubit, the Pauli-X gate flips the amplitudes of the $|0\rangle$ and $|1\rangle$ states. For example, if we apply the Pauli-X gate to the state $|0\rangle$, we get:
+        
+        $$X|0\rangle = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix} \begin{pmatrix} 1 \\ 0 \end{pmatrix} = \begin{pmatrix} 0 \\ 1 \end{pmatrix} = |1\rangle$$
+        
+        Similarly, applying the Pauli-X gate to the state $|1\rangle$ gives:
+        $$X|1\rangle = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix} \begin{pmatrix} 0 \\ 1 \end{pmatrix} = \begin{pmatrix} 1 \\ 0 \end{pmatrix} = |0\rangle$$
+        
+        Thus, the Pauli-X gate acts as a quantum NOT gate, flipping the state of a qubit from $|0\rangle$ to $|1\rangle$ and vice versa. The Pauli-Y and Pauli-Z gates that perform rotations around
+        the Y and Z axes of the Bloch sphere, respectively. The Pauli-Y gate is represented by the matrix:
+        
+        $$Y = \begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix}$$ 
+        
+        and the Pauli-Z gate is represented by the matrix:
+        
+        $$Z = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}$$
+
+        When applied to a qubit, the Pauli-Z gate leaves the $|0\rangle$ state unchanged and flips the sign of the $|1\rangle$ state. For example, applying the Pauli-Z gate to the state $\alpha_0|0\rangle + \alpha_1|1\rangle$ gives:
+        $$Z(\alpha_0|0\rangle + \alpha_1|1\rangle) = \alpha_0|0\rangle - \alpha_1|1\rangle$$        
+        These gates are essential for manipulating qubits and are used in various quantum algorithms and protocols. For instance, the Pauli-Z gate can be used to create a phase shift in a qubit, while the Pauli-Y gate can be used 
+        to create a superposition of states. Together, the Pauli gates form a complete set of single qubit gates, meaning that any single qubit operation can be expressed as a combination of these gates.
+      </p>
   <!-- Script LaTeX MathJax -->
   <script>
     MathJax = {
