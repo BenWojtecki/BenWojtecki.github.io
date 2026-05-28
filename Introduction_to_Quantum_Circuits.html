@@ -116,13 +116,17 @@ exhibit.
         the Y and Z axes of the Bloch sphere, respectively. The Pauli-Y gate is represented by the matrix:
         
         $$Y = \begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix}$$ 
-        
-        and the Pauli-Z gate is represented by the matrix:
+        When applied to a qubit, the Pauli-Y gate creates a superposition of the $|0\rangle$ and $|1\rangle$ states, with a phase shift of $\pi/2$. For example, applying the Pauli-Y gate to the state $|0\rangle$ gives:
+        $$Y|0\rangle = \begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix} \begin{pmatrix} 1 \\ 0 \end{pmatrix} = \begin{pmatrix} 0 \\ i \end{pmatrix} = i|1\rangle$$
+        Similarly, applying the Pauli-Y gate to the state $|1\rangle$ gives:
+        $$Y|1\rangle = \begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix} \begin{pmatrix} 0 \\ 1 \end{pmatrix} = \begin{pmatrix} -i \\ 0 \end{pmatrix} = -i|0\rangle$$
+
+        The Pauli-Z gate is represented by the matrix:
         
         $$Z = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}$$
 
         When applied to a qubit, the Pauli-Z gate leaves the $|0\rangle$ state unchanged and flips the sign of the $|1\rangle$ state. For example, applying the Pauli-Z gate to the state $\alpha_0|0\rangle + \alpha_1|1\rangle$ gives:
-        $$Z(\alpha_0|0\rangle + \alpha_1|1\rangle) = \alpha_0|0\rangle - \alpha_1|1\rangle$$        
+        $$Z(|0\rangle + |1\rangle) = |0\rangle - |1\rangle$$        
         These gates are essential for manipulating qubits and are used in various quantum algorithms and protocols. For instance, the Pauli-Z gate can be used to create a phase shift in a qubit, while the Pauli-Y gate can be used 
         to create a superposition of states. Together, the Pauli gates form a complete set of single qubit gates, meaning that any single qubit operation can be expressed as a combination of these gates.
       </p>
