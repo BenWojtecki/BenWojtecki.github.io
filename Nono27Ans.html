@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>❤ Pour Nono ❤</title>
+<style>
+  :root{
+    --bg-dark:#150f28;
+    --accent:#ff6f91;
+    --accent-light:#ffc2d1;
+    --cream:#fdf6ec;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; height:100%;
+    background:radial-gradient(circle at 50% 20%, #2a1f4d, #0f0a1e 70%);
+    font-family:'Trebuchet MS','Segoe UI',sans-serif;
+    color:var(--cream);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  #stage{ position:relative; width:min(96vw, 1100px); }
+  h1{
+    text-align:center; font-size:clamp(18px,4vw,28px);
+    letter-spacing:1px; margin:0 0 8px; text-shadow:0 0 12px var(--accent);
+  }
+  #wrap{
+    position:relative; border:6px solid #4a3a7a; border-radius:10px;
+    box-shadow:0 0 0 4px var(--bg-dark), 0 14px 40px rgba(0,0,0,0.6);
+    overflow:hidden; background:#000;
+  }
+  canvas{ display:block; width:100%; height:auto; aspect-ratio: 4/3; image-rendering:pixelated; }
+  #wrap:fullscreen, #wrap:-webkit-full-screen{
+    width:100vw; height:100vh; border:none; border-radius:0;
+    box-shadow:none; display:flex; align-items:center; justify-content:center;
+    background:#000;
+  }
+  #wrap:fullscreen canvas, #wrap:-webkit-full-screen canvas{
+    width:auto; height:100vh; max-width:100vw; aspect-ratio:4/3;
+  }
+  #hud{ display:flex; align-items:center; justify-content:space-between; padding:8px 4px; font-size:13px; }
+  #hearts{ display:flex; gap:3px; flex-wrap:wrap; max-width:70%; }
+  .heart-slot{ font-size:16px; opacity:0.22; transition:opacity .3s, transform .3s; filter: grayscale(1); }
+  .heart-slot.filled{ opacity:1; transform:scale(1.15); filter: grayscale(0); }
+  #hint{ font-size:11px; opacity:0.75; text-align:right; }
+  #dialog{
+    position:absolute; left:0; right:0; bottom:0;
+    background:rgba(15,10,28,0.94); border-top:3px solid var(--accent);
+    padding:14px 18px; font-size:clamp(13px,2.2vw,16px); line-height:1.5;
+    transform:translateY(100%); transition:transform .35s ease; z-index:4;
+  }
+  #dialog.show{ transform:translateY(0); }
+  #dialog .who{ color:var(--accent-light); font-weight:bold; margin-bottom:4px; display:block; }
+  #dialog .next{ text-align:right; font-size:11px; opacity:0.6; margin-top:6px; }
+  #cover, #ending{
+    position:absolute; inset:0;
+    background:radial-gradient(circle at 50% 30%, #3a2a66, #14102a 75%);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:30px; z-index:5;
+  }
+  #ending{ display:none; }
+  #cover h2, #ending h2{ font-size:clamp(20px,4.5vw,30px); margin:0 0 14px; color:var(--accent-light); }
+  #cover p, #ending p{ max-width:480px; line-height:1.6; margin:0 0 18px; }
+  button{
+    background:var(--accent); color:#fff; border:none; padding:10px 22px;
+    font-size:15px; border-radius:30px; cursor:pointer;
+    box-shadow:0 4px 14px rgba(255,111,145,0.5); transition:transform .15s;
+  }
+  button:hover{ transform:scale(1.05); }
+  #touch-controls{
+    display:grid; grid-template-columns:repeat(3,48px); grid-template-rows:repeat(3,48px);
+    gap:4px; justify-content:center; margin-top:10px;
+  }
+  #touch-controls button{ padding:0; font-size:18px; border-radius:8px; }
+  .tc-up{grid-column:2; grid-row:1;}
+  .tc-left{grid-column:1; grid-row:2;}
+  .tc-right{grid-column:3; grid-row:2;}
+  .tc-down{grid-column:2; grid-row:3;}
+  @media (min-width:700px){ #touch-controls{ display:none; } }
+  #progress{ font-size:11px; opacity:0.7; text-align:center; margin-top:4px; }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <h1>💜 Un petit monde pour toi 💜</h1>
+  <div id="wrap">
+    <canvas id="game" width="512" height="384"></canvas>
+    <div id="dialog"><span class="who"></span><span class="text"></span><div class="next">Appuie sur SPACE pour continuer ▸</div></div>
+    <div id="cover">
+      <h2>🎂 Joyeux anniversaire Nono 🎂</h2>
+      <p>Quelque part quelqu'un pense à toi, et cette personne se trouve en Belgique (à Liège plus précisément). Explore ce petit monde, trouve toutes les fées, et salue un petit visiteur. Utilise les touches fléchées pour te déplacer, la barre espace pour parler et le bouton en forme de note pour lancer la mélodie</p>
+      <button id="startBtn">Play ▸</button>
+    </div>
+    <div id="ending">
+      <h2>Bravo 🎉 Tu les as tous trouvé</h2>
+      <p id="endingText"></p>
+      <p style="font-size:13px;opacity:0.7;">(refresh la page si tu veux rejouer)</p>
+    </div>
+  </div>
+  <div id="hud">
+    <div id="hearts"></div>
+    <div style="display:flex; gap:6px;">
+      <button id="musicBtn" style="padding:4px 10px;font-size:13px;">🔇 Musique</button>
+      <button id="fsBtn" style="padding:4px 10px;font-size:13px;">⛶ Fullscreen</button>
+    </div>
+    <div id="hint">touche fléchées pour bouger · space pour parler</div>
+  </div>
+  <div id="progress"></div>
+  <div id="touch-controls">
+    <button class="tc-up">▲</button>
+    <button class="tc-left">◀</button>
+    <button class="tc-right">▶</button>
+    <button class="tc-down">▼</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CUSTOMIZE HERE
+   ============================================================ */
+const HER_NAME = "Nono"; // also change in #cover h2 above
+const CAT_NAME = "Nounouille";
+
+const FAIRY_MESSAGES = [
+  "Aujourd'hui est une journée spéciale, parce qu'elle célèbre la naissance de ma petite princesse que j'aime. J'espère que tu te sentiras entourée d'amour, même si je ne suis pas à tes côtés",
+  "La distance n'est qu'un chiffre quand je pense à toi... Tu es avec moi dans tout ce que je fais",
+  "J'espère que cette journée est aussi belle que toi ! Joyeux anniversaire 💜",
+  "La distance rend certains jours plus difficiles, et aujourd'hui en fait partie. J'aurais tellement aimé être là pour te prendre dans mes bras et célébrer cette journée avec toi. Joyeux anniversaire mon coeur en sucre que j'aime",
+  "S'il y a une personne qui mérite tout le bonheur du monde aujourd'hui, c'est toi !",
+  "Si je pouvais faire un seul vœu aujourd'hui, ce serait d'être à tes côtés pour voir ton sourire en vrai. En attendant, je t'envoie tout mon amour et mille bisous... Joyeux anniversaire 💖",
+  "Peu importe le nombre de kilomètres entre nous, il n'y en aura jamais assez pour éloigner ce que je ressens pour toi !",
+  "Joyeux anniversaire mon amour. Mon coeur est toujours à tes côtés"
+];
+
+const CAT_MESSAGES = [
+  "Miaou... Je sais que ces derniers jours ont été difficile sans moi. Je voulais venir te dire bonjour, même si ce n'est qu'ici...",
+  "Joyeux anniversaire Nono 🤍. Soit douce avec toi-même. Il pense à toi et moi aussi 🐾🤍"
+];
+
+const ENDING_MESSAGE = `Joyeux anniversaire ${HER_NAME}. J'ai créé ce petit monde parce que les mots ne sont jamais assez pour exprimer ce que je ressens. Chaque fée que tu as trouvée représente une part de ce que je ressens pour toi. J'ai hâte de te serrer dans mes bras et d'être ensemble. Je t'aime 💜`;
+/* ============================================================ */
+
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+const TILE = 16;
+const VIEW_COLS = 32;
+const VIEW_ROWS = 24;
+
+const rawMap = [
+"222222222222222222222222222222222222222222222222222222",
+"200500004000000040000000400000050000004000000040000042",
+"200000000000000000000000000000000000000000000000000002",
+"200000000000080000000444000000000000888000000000000002",
+"200000111111111111111111111111111111111111111000000002",
+"200000100080001000000000000000000000001004001000000002",
+"200000101111111011111111111111111111111000401000000002",
+"200000101000801010080000008000000800001408801000000002",
+"200000101044401010444444444444444444401440481000000002",
+"200000101000001110000000000000000000111004001000000002",
+"200000111111111011111111111111111111101008401000000002",
+"200000145454545454511100000000000000001000001000000002",
+"200000154545454545401033333333333300001111111000000002",
+"200000145454545454501003333333333330040100000000000002",
+"200000154545454545401003333333333330050100000000000002",
+"200000145454545454501003333333333330040100000000000002",
+"200000154511111111111003333999933330050100000000000002",
+"200000145410000800000003333999933330040100000000000002",
+"200000154510000000000003333999933330050100000000000002",
+"200000145411111111111000333333333330040100000008880002",
+"200000145454545454111000033333333000050100000000000002",
+"200000154545454545514000000000000000000000888000000002",
+"200000145454545454515000000000400000000100000000000002",
+"200000111111111111111111111111111111111100000008888002",
+"200000000000500000000500000000500000000000000088800002",
+"200040000500008000040000500008000040000500008000040002",
+"222222222222222222222222222222222222222222222222222222",
+];
+const MAP_W = Math.max(...rawMap.map(r=>r.length));
+const grid = rawMap.map(row => {
+  const arr = row.split('').map(Number);
+  while(arr.length < MAP_W) arr.push(2);
+  return arr;
+});
+const MAP_H = grid.length;
+
+const heartPositions = [
+  {x:9,  y:9},  {x:23, y:8},  {x:38, y:8},  {x:9,  y:16},
+  {x:28, y:11}, {x:46, y:6},  {x:13, y:21}, {x:33, y:21}
+];
+let collected = new Set();
+
+// Houses: decorative + solid footprint (base tiles block movement, roof draws above)
+const HOUSES = [
+  {x:4,  y:2, w:3},
+  {x:11, y:2, w:3},
+  {x:18, y:2, w:4},
+  {x:26, y:2, w:3},
+  {x:33, y:2, w:3},
+  {x:40, y:2, w:4},
+  {x:48, y:2, w:3}
+];
+function isHouseSolidAt(cx, cy){
+  for(const h of HOUSES){
+    if(cy === h.y && cx >= h.x && cx < h.x + h.w) return true;
+  }
+  return false;
+}
+
+// The cat: a gentle stationary visitor near one of the houses
+const cat = { x: 13*TILE, y: 4*TILE, dir:'down', tailT:0 };
+let catGreeted = false; // becomes true while standing near her so dialog doesn't repeat instantly
+let catNearby = false;
+let catDialogIndex = 0;
+
+// A few wandering butterflies for ambiance, each looping gently around a home point
+const BUTTERFLY_COLORS = ['#ffd86b','#ff9ed6','#9ed6ff','#c2ff9e'];
+const butterflies = [
+  {hx:9*TILE,  hy:8*TILE,  r:26, speed:0.0006, phase:0,   color:0},
+  {hx:11*TILE,  hy:15*TILE,  r:26, speed:0.0006, phase:0,   color:0},
+  {hx:18*TILE,  hy:12*TILE,  r:26, speed:0.0006, phase:0,   color:3},
+  {hx:23*TILE, hy:9*TILE,  r:22, speed:0.0008, phase:1.5, color:1},
+  {hx:33*TILE, hy:8*TILE,  r:30, speed:0.0005, phase:3.1, color:2},
+  {hx:13*TILE, hy:22*TILE, r:20, speed:0.0009, phase:4.4, color:3},
+  {hx:30*TILE, hy:21*TILE, r:24, speed:0.0007, phase:2.2, color:1},
+];
+
+const player = { x: 5*TILE, y: 3*TILE, dir:'down', moving:false, frame:0 };
+const speed = 1.6;
+let keys = {};
+let dialogShowing = false;
+let lastTime = performance.now();
+
+function tileAt(cx, cy){
+  if(cy<0||cy>=MAP_H||cx<0||cx>=MAP_W) return 2;
+  return grid[cy][cx];
+}
+function isSolid(t){
+  return t===2 || t===3 || t===6 || t===11 || t===12;
+}
+
+function tryMove(dx, dy, dir){
+  player.dir = dir;
+  player.moving = true;
+  const nx = player.x + dx*speed;
+  const ny = player.y + dy*speed;
+  const margin = 3;
+  const corners = [
+    [nx+margin, ny+margin],[nx+TILE-margin, ny+margin],
+    [nx+margin, ny+TILE-1],[nx+TILE-margin, ny+TILE-1]
+  ];
+  let blocked = false;
+  for(const [cxp,cyp] of corners){
+    const ccx = Math.floor(cxp/TILE), ccy = Math.floor(cyp/TILE);
+    const t = tileAt(ccx, ccy);
+    if(isSolid(t) || isHouseSolidAt(ccx, ccy)){ blocked = true; break; }
+  }
+  if(!blocked){ player.x = nx; player.y = ny; }
+}
+
+function update(dt){
+  if(dialogShowing){ player.moving=false; return; }
+  let dx=0, dy=0, dir=player.dir;
+  if(keys['ArrowUp']){ dy=-1; dir='up'; }
+  else if(keys['ArrowDown']){ dy=1; dir='down'; }
+  else if(keys['ArrowLeft']){ dx=-1; dir='left'; }
+  else if(keys['ArrowRight']){ dx=1; dir='right'; }
+
+  if(dx!==0||dy!==0){
+    tryMove(dx,dy,dir);
+    player.frame += 0.22;
+  } else {
+    player.moving = false;
+  }
+
+  const pcx = Math.floor((player.x+TILE/2)/TILE);
+  const pcy = Math.floor((player.y+TILE/2)/TILE);
+  heartPositions.forEach((h,i)=>{
+    if(!collected.has(i) && h.x===pcx && h.y===pcy){
+      collected.add(i);
+      updateHud();
+      showDialog("Fairy", FAIRY_MESSAGES[i]);
+      if(collected.size === heartPositions.length){
+        setTimeout(()=>showEnding(), 500);
+      }
+    }
+  });
+
+  cat.tailT += dt;
+  const catCx = Math.floor((cat.x+TILE/2)/TILE);
+  const catCy = Math.floor((cat.y+TILE/2)/TILE);
+  const distTiles = Math.abs(pcx-catCx) + Math.abs(pcy-catCy);
+  catNearby = distTiles <= 1;
+  if(catNearby && !catGreeted){
+    catGreeted = true;
+    showDialog(CAT_NAME, CAT_MESSAGES[catDialogIndex % CAT_MESSAGES.length]);
+    catDialogIndex++;
+  } else if(!catNearby){
+    catGreeted = false; // walking away resets so she can talk again next visit
+  }
+}
+
+function drawGrassTile(x,y,variant,seed){
+  ctx.fillStyle = variant ? '#3c9a4a' : '#43a653';
+  ctx.fillRect(x,y,TILE,TILE);
+  ctx.fillStyle = 'rgba(255,255,255,0.05)';
+  ctx.fillRect(x,y,TILE,2);
+  ctx.fillStyle = 'rgba(0,0,0,0.06)';
+  const s = seed || 0;
+  for(let i=0;i<3;i++){
+    const px = x + ((i*5 + (s*13)) % (TILE-2));
+    const py = y + ((i*7 + (s*7)) % (TILE-2));
+    ctx.fillRect(px,py,2,1);
+  }
+}
+function drawPathTile(x,y){
+  ctx.fillStyle = '#d9c79e';
+  ctx.fillRect(x,y,TILE,TILE);
+  ctx.fillStyle = '#cdb685';
+  ctx.fillRect(x,y+TILE-3,TILE,3);
+  ctx.fillStyle = 'rgba(0,0,0,0.05)';
+  ctx.fillRect(x+3,y+5,2,2);
+  ctx.fillRect(x+10,y+9,2,2);
+}
+function drawDirtTile(x,y){
+  ctx.fillStyle = '#a3835a';
+  ctx.fillRect(x,y,TILE,TILE);
+  ctx.fillStyle = 'rgba(0,0,0,0.08)';
+  ctx.fillRect(x+2,y+3,3,2);
+  ctx.fillRect(x+9,y+10,3,2);
+}
+function drawSandTile(x,y){
+  ctx.fillStyle = '#e8d9a8';
+  ctx.fillRect(x,y,TILE,TILE);
+}
+function drawTreeTile(x,y,seed){
+  drawGrassTile(x,y,false,seed);
+  ctx.fillStyle = '#5b3a29';
+  ctx.fillRect(x+6,y+10,4,6);
+  ctx.fillStyle = '#1f5c2a';
+  ctx.beginPath();
+  ctx.arc(x+8,y+6,8,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#2d7d3a';
+  ctx.beginPath();
+  ctx.arc(x+5,y+4,5,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.08)';
+  ctx.beginPath();
+  ctx.arc(x+6,y+3,2.5,0,Math.PI*2);
+  ctx.fill();
+}
+function drawBushTile(x,y,seed){
+  drawGrassTile(x,y,false,seed);
+  ctx.fillStyle = '#2f7d3a';
+  ctx.beginPath();
+  ctx.arc(x+8,y+10,6,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#3c9a4a';
+  ctx.beginPath();
+  ctx.arc(x+6,y+8,4,0,Math.PI*2);
+  ctx.fill();
+}
+function drawStoneTile(x,y){
+  ctx.fillStyle = '#5a5468';
+  ctx.fillRect(x,y,TILE,TILE);
+  ctx.fillStyle = '#6f6880';
+  ctx.fillRect(x+2,y+2,TILE-6,TILE-6);
+}
+function drawFenceTile(x,y,seed){
+  drawGrassTile(x,y,false,seed);
+  ctx.fillStyle = '#8a6a45';
+  ctx.fillRect(x+2,y+2,3,TILE-4);
+  ctx.fillRect(x+TILE-5,y+2,3,TILE-4);
+  ctx.fillRect(x,y+5,TILE,3);
+}
+function drawWaterTile(x,y,t,cx,cy){
+  const shimmer = Math.sin(t/350 + cx*0.6 + cy*0.6) * 0.5 + 0.5;
+  ctx.fillStyle = shimmer>0.5 ? '#4f86ef' : '#3a6fd9';
+  ctx.fillRect(x,y,TILE,TILE);
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.fillRect(x+2, y+ (shimmer>0.5?4:9), 6, 1.5);
+}
+function drawBridgeTile(x,y){
+  ctx.fillStyle = '#9a7344';
+  ctx.fillRect(x,y,TILE,TILE);
+  ctx.fillStyle = '#7a5a36';
+  for(let i=0;i<TILE;i+=4) ctx.fillRect(x,y+i,TILE,1);
+}
+function drawFlowerTile(x,y,color,seed,time){
+  drawGrassTile(x,y,false,seed);
+  const sway = Math.sin((time||0)/450 + seed)*0.8;
+  ctx.fillStyle = color==='pink' ? '#ff8fb3' : '#ffd84d';
+  ctx.fillRect(x+4+sway,y+5,2,2);
+  ctx.fillRect(x+9-sway,y+9,2,2);
+  ctx.fillRect(x+6+sway*0.6,y+11,2,2);
+  ctx.fillStyle='#2f7d3a';
+  ctx.fillRect(x+4,y+7,1,2);
+  ctx.fillRect(x+9,y+11,1,2);
+}
+function drawTallGrassTile(x,y,seed,time){
+  drawGrassTile(x,y,true,seed);
+  ctx.fillStyle = '#2f7d3a';
+  const sway = Math.sin((time||0)/500 + seed)*1.2;
+  for(let i=0;i<4;i++){
+    const px = x+2+i*3;
+    ctx.save();
+    ctx.translate(px, y+14);
+    ctx.rotate(sway*0.05*(i%2===0?1:-1));
+    ctx.fillRect(0, -8, 1, 8);
+    ctx.restore();
+  }
+}
+
+function drawTile(t, x, y, time, cx, cy){
+  const seed = ((cx*13 + cy*7) % 11);
+  switch(t){
+    case 0: drawGrassTile(x,y,false,seed); break;
+    case 14: drawGrassTile(x,y,true,seed); break;
+    case 1: drawPathTile(x,y); break;
+    case 2: drawTreeTile(x,y,seed); break;
+    case 3: drawWaterTile(x,y,time,cx,cy); break;
+    case 4: drawFlowerTile(x,y,'pink',seed,time); break;
+    case 5: drawFlowerTile(x,y,'yellow',seed,time); break;
+    case 6: drawFenceTile(x,y,seed); break;
+    case 7: drawDirtTile(x,y); break;
+    case 8: drawTallGrassTile(x,y,seed,time); break;
+    case 9: drawBridgeTile(x,y); break;
+    case 10: drawSandTile(x,y); break;
+    case 11: drawBushTile(x,y,seed); break;
+    case 12: drawStoneTile(x,y); break;
+    default: drawGrassTile(x,y,false,seed);
+  }
+}
+
+function drawPlayer(sx, sy, time){
+  const bob = player.moving ? Math.sin(player.frame*6)*1.2 : 0;
+  const x = sx, y = sy + bob;
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.beginPath();
+  ctx.ellipse(x+8, y+15, 5, 2, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  const legOffset = player.moving ? Math.sin(player.frame*6)*2 : 0;
+  ctx.fillStyle = '#3a2a5e';
+  ctx.fillRect(x+4, y+12+Math.max(0,legOffset), 3, 3);
+  ctx.fillRect(x+9, y+12+Math.max(0,-legOffset), 3, 3);
+  ctx.fillStyle = '#7c4ee0';
+  ctx.fillRect(x+3, y+6, 10, 7);
+  ctx.fillStyle = '#9a6ef0';
+  ctx.fillRect(x+3, y+6, 10, 2);
+  ctx.fillStyle = '#5a3a1e';
+  ctx.fillRect(x+3, y+11, 10, 2);
+  ctx.fillStyle = '#ffd9b3';
+  if(player.dir==='left'){ ctx.fillRect(x+1,y+7,2,5); }
+  else if(player.dir==='right'){ ctx.fillRect(x+13,y+7,2,5); }
+  else { ctx.fillRect(x+1,y+7,2,5); ctx.fillRect(x+13,y+7,2,5); }
+  ctx.fillStyle = '#ffd9b3';
+  ctx.fillRect(x+4, y+1, 8, 6);
+  ctx.fillStyle = '#4a2f1e';
+  ctx.fillRect(x+3, y, 10, 2);
+  if(player.dir!=='up'){
+    ctx.fillRect(x+3, y+1, 2, 4);
+    ctx.fillRect(x+11, y+1, 2, 4);
+  }
+  ctx.fillStyle = '#2a1a10';
+  if(player.dir==='down'){ ctx.fillRect(x+6,y+4,1,1); ctx.fillRect(x+9,y+4,1,1); }
+  if(player.dir==='left'){ ctx.fillRect(x+5,y+4,1,1); }
+  if(player.dir==='right'){ ctx.fillRect(x+10,y+4,1,1); }
+}
+
+const FAIRY_COLORS = ['#ffd86b','#7ce0ff','#ff9ed6','#b6ff8a','#c79bff'];
+function drawHeart(x,y,time,i){
+  const bob = Math.sin(time/280 + i)*3;
+  const wingFlap = Math.sin(time/60 + i*2)*0.6 + 0.6;
+  const glow = Math.sin(time/220+i)*0.25+0.75;
+  const fx = x+8, fy = y+9+bob;
+  const color = FAIRY_COLORS[i % FAIRY_COLORS.length];
+
+  // soft glow halo
+  ctx.save();
+  ctx.globalAlpha = glow*0.5;
+  const grad = ctx.createRadialGradient(fx,fy,0,fx,fy,9);
+  grad.addColorStop(0, color);
+  grad.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(fx,fy,9,0,Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+
+  // wings
+  ctx.save();
+  ctx.globalAlpha = 0.85;
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.beginPath();
+  ctx.ellipse(fx-4, fy-1, 3.2, 1.6+wingFlap*1.5, -0.5, 0, Math.PI*2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(fx+4, fy-1, 3.2, 1.6+wingFlap*1.5, 0.5, 0, Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+
+  // tiny glowing body
+  ctx.save();
+  ctx.globalAlpha = glow;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.ellipse(fx, fy+1, 1.6, 3, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#fff7e0';
+  ctx.beginPath();
+  ctx.arc(fx, fy-2.5, 1.8, 0, Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+
+  // sparkles
+  const spark = (Math.sin(time/150+i*3)+1)/2;
+  if(spark > 0.7){
+    ctx.save();
+    ctx.globalAlpha = (spark-0.7)/0.3;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(fx+5+Math.sin(time/200+i)*3, fy-4+Math.cos(time/180+i)*3, 1.5, 1.5);
+    ctx.restore();
+  }
+}
+
+const ROOF_COLORS = [
+  ['#c44d4d','#a83d3d'], ['#4d8bc4','#3d6fa8'], ['#c4a14d','#a8843d'],
+  ['#7ac46e','#5fa854'], ['#b06ec4','#9356a8'], ['#e0995c','#c47e42'],
+  ['#5cc4b0','#3fa893']
+];
+function drawHouse(h, camX, camY, colorIdx){
+  const baseX = h.x*TILE - camX, baseY = h.y*TILE - camY;
+  const [roofMain, roofShade] = ROOF_COLORS[colorIdx % ROOF_COLORS.length];
+  const w = h.w*TILE, wallH = TILE*1.6, roofH = TILE*1.4;
+  const top = baseY - wallH - roofH + TILE;
+  // shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.fillRect(baseX, baseY+TILE-3, w, 4);
+  // walls
+  ctx.fillStyle = '#f1e3c6';
+  ctx.fillRect(baseX, top+roofH, w, wallH);
+  ctx.fillStyle = 'rgba(0,0,0,0.06)';
+  for(let i=0;i<w;i+=8) ctx.fillRect(baseX+i, top+roofH, 1, wallH);
+  // door
+  const doorW = 10, doorH = 14;
+  const doorX = baseX + w/2 - doorW/2;
+  const doorY = top+roofH+wallH-doorH;
+  ctx.fillStyle = '#7a4a2a';
+  ctx.fillRect(doorX, doorY, doorW, doorH);
+  ctx.fillStyle = '#f2c75c';
+  ctx.fillRect(doorX+doorW-3, doorY+doorH/2-1, 2, 2);
+  // window
+  ctx.fillStyle = '#a3d9e8';
+  ctx.fillRect(baseX+6, top+roofH+6, 8, 8);
+  ctx.strokeStyle = '#7a4a2a';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(baseX+6, top+roofH+6, 8, 8);
+  if(w > TILE*2){
+    ctx.fillStyle = '#a3d9e8';
+    ctx.fillRect(baseX+w-14, top+roofH+6, 8, 8);
+    ctx.strokeRect(baseX+w-14, top+roofH+6, 8, 8);
+  }
+  // roof (triangle)
+  ctx.fillStyle = roofMain;
+  ctx.beginPath();
+  ctx.moveTo(baseX-4, top+roofH);
+  ctx.lineTo(baseX+w/2, top-2);
+  ctx.lineTo(baseX+w+4, top+roofH);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = roofShade;
+  ctx.beginPath();
+  ctx.moveTo(baseX-4, top+roofH);
+  ctx.lineTo(baseX+w/2, top-2);
+  ctx.lineTo(baseX+w/2, top+roofH);
+  ctx.closePath();
+  ctx.fill();
+  // chimney
+  ctx.fillStyle = '#8a6a55';
+  ctx.fillRect(baseX+w-14, top-8, 6, 12);
+}
+
+function drawCat(sx, sy, time){
+  const x = sx, y = sy;
+  ctx.fillStyle = 'rgba(0,0,0,0.22)';
+  ctx.beginPath();
+  ctx.ellipse(x+8, y+15, 5, 2, 0, 0, Math.PI*2);
+  ctx.fill();
+  const tailWag = Math.sin(time/250)*4;
+  // tail
+  ctx.strokeStyle = '#1c1c1c';
+  ctx.lineWidth = 2.4;
+  ctx.beginPath();
+  ctx.moveTo(x+2, y+12);
+  ctx.quadraticCurveTo(x-4, y+10+tailWag*0.3, x-3, y+4+tailWag);
+  ctx.stroke();
+  // body (white with black patch)
+  ctx.fillStyle = '#fdfdfd';
+  ctx.beginPath();
+  ctx.ellipse(x+8, y+11, 6, 4, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#1c1c1c';
+  ctx.beginPath();
+  ctx.ellipse(x+10, y+10, 3.4, 3, 0, 0, Math.PI*2);
+  ctx.fill();
+  // head
+  ctx.fillStyle = '#1c1c1c';
+  ctx.beginPath();
+  ctx.arc(x+6, y+7, 4, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#fdfdfd';
+  ctx.beginPath();
+  ctx.arc(x+5, y+8, 2.2, 0, Math.PI*2);
+  ctx.fill();
+  // ears
+  ctx.fillStyle = '#1c1c1c';
+  ctx.beginPath();
+  ctx.moveTo(x+3,y+5); ctx.lineTo(x+4,y+1); ctx.lineTo(x+6,y+4); ctx.closePath(); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(x+7,y+4); ctx.lineTo(x+9,y+1); ctx.lineTo(x+9,y+5); ctx.closePath(); ctx.fill();
+  // eyes
+  ctx.fillStyle = '#7fd147';
+  ctx.fillRect(x+4, y+7, 1.2, 1.2);
+  ctx.fillRect(x+7, y+7, 1.2, 1.2);
+  // little legs
+  ctx.fillStyle = '#1c1c1c';
+  ctx.fillRect(x+4, y+13, 1.5, 2);
+  ctx.fillRect(x+11, y+13, 1.5, 2);
+}
+
+function drawButterfly(b, camX, camY, time){
+  const ang = time*b.speed + b.phase;
+  const wob = Math.sin(time/180 + b.phase)*3;
+  const bx = b.hx + Math.cos(ang)*b.r - camX;
+  const by = b.hy + Math.sin(ang*1.3)*b.r*0.5 + wob - camY;
+  const flap = Math.sin(time/55 + b.phase)*0.7+0.3;
+  const color = BUTTERFLY_COLORS[b.color % BUTTERFLY_COLORS.length];
+
+  ctx.save();
+  ctx.translate(bx, by);
+  ctx.fillStyle = color;
+  ctx.globalAlpha = 0.95;
+  // wings
+  ctx.beginPath();
+  ctx.ellipse(-2.5, 0, 2.6, 1.6+flap*1.4, -0.4, 0, Math.PI*2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(2.5, 0, 2.6, 1.6+flap*1.4, 0.4, 0, Math.PI*2);
+  ctx.fill();
+  // body
+  ctx.fillStyle = '#3a2a1e';
+  ctx.fillRect(-0.5, -2.5, 1, 5);
+  ctx.restore();
+}
+
+function draw(time){
+  const viewW = VIEW_COLS*TILE, viewH = VIEW_ROWS*TILE;
+  let camX = player.x + TILE/2 - viewW/2;
+  let camY = player.y + TILE/2 - viewH/2;
+  camX = Math.max(0, Math.min(camX, MAP_W*TILE - viewW));
+  camY = Math.max(0, Math.min(camY, MAP_H*TILE - viewH));
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  const startCol = Math.floor(camX/TILE);
+  const endCol = Math.ceil((camX+viewW)/TILE);
+  const startRow = Math.floor(camY/TILE);
+  const endRow = Math.ceil((camY+viewH)/TILE);
+
+  for(let cy=startRow; cy<endRow; cy++){
+    for(let cx=startCol; cx<endCol; cx++){
+      const t = tileAt(cx,cy);
+      drawTile(t, cx*TILE-camX, cy*TILE-camY, time, cx, cy);
+    }
+  }
+
+  heartPositions.forEach((h,i)=>{
+    if(collected.has(i)) return;
+    drawHeart(h.x*TILE-camX, h.y*TILE-camY, time, i);
+  });
+
+  HOUSES.forEach((h,i) => drawHouse(h, camX, camY, i));
+  drawCat(cat.x-camX, cat.y-camY, time);
+  butterflies.forEach(b => drawButterfly(b, camX, camY, time));
+
+  drawPlayer(player.x-camX, player.y-camY, time);
+
+  const grad = ctx.createRadialGradient(viewW/2,viewH/2,viewH/2.4,viewW/2,viewH/2,viewH/1.1);
+  grad.addColorStop(0,'rgba(0,0,0,0)');
+  grad.addColorStop(1,'rgba(0,0,0,0.28)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,viewW,viewH);
+}
+
+function loop(time){
+  const dt = time - lastTime; lastTime = time;
+  update(dt);
+  draw(time);
+  requestAnimationFrame(loop);
+}
+
+const dialogEl = document.getElementById('dialog');
+function showDialog(who, text){
+  dialogShowing = true;
+  dialogEl.querySelector('.who').textContent = who;
+  dialogEl.querySelector('.text').textContent = text;
+  dialogEl.classList.add('show');
+}
+function hideDialog(){ dialogShowing = false; dialogEl.classList.remove('show'); }
+window.addEventListener('keydown', e=>{
+  if(e.code==='Space'){ e.preventDefault(); if(dialogShowing) hideDialog(); }
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) e.preventDefault();
+  keys[e.key]=true;
+});
+window.addEventListener('keyup', e=> keys[e.key]=false);
+dialogEl.addEventListener('click', ()=>{ if(dialogShowing) hideDialog(); });
+
+function bindHold(sel, fn){
+  const el = document.querySelector(sel);
+  const s = e=>{ e.preventDefault(); fn(true); };
+  const en = e=>{ e.preventDefault(); fn(false); };
+  el.addEventListener('touchstart', s); el.addEventListener('touchend', en);
+  el.addEventListener('mousedown', s); el.addEventListener('mouseup', en);
+  el.addEventListener('mouseleave', en);
+}
+bindHold('.tc-up', v=>keys['ArrowUp']=v);
+bindHold('.tc-down', v=>keys['ArrowDown']=v);
+bindHold('.tc-left', v=>keys['ArrowLeft']=v);
+bindHold('.tc-right', v=>keys['ArrowRight']=v);
+
+// ---- Gentle background music (procedural, no external files) ----
+let audioCtx = null;
+let musicOn = false;
+let musicTimer = null, bassTimer = null, arpTimer = null;
+
+// Melody — warm triangle lead, a gentle, slightly longer tune
+const melody = [
+  [523.25,1],[659.25,1],[783.99,1],[659.25,1],
+  [523.25,1],[440.00,1],[523.25,2],
+  [392.00,1],[440.00,1],[523.25,1],[440.00,1],
+  [392.00,1],[349.23,1],[392.00,2],
+  [440.00,1],[523.25,1],[659.25,1],[523.25,1],
+  [440.00,1],[392.00,1],[440.00,2],
+];
+let melodyStep = 0;
+
+// Bass — slow root notes under a I–V–vi–IV progression (C–G–Am–F)
+const bassLine = [130.81, 98.00, 110.00, 87.31];
+let bassStep = 0;
+
+// Soft arpeggio layer for texture — chord tones of the same progression
+const chordTones = [
+  [261.63,329.63,392.00], // C major
+  [196.00,246.94,293.66], // G major
+  [220.00,261.63,329.63], // A minor
+  [174.61,220.00,261.63], // F major
+];
+let arpStep = 0;
+
+function playTone(freq, dur, type, vol){
+  if(!audioCtx) return;
+  const t = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0, t);
+  gain.gain.linearRampToValueAtTime(vol, t+0.04);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t+dur-0.03);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(t);
+  osc.stop(t+dur);
+}
+function playNote(freq, dur){
+  playTone(freq, dur, 'triangle', 0.07);
+  playTone(freq/2, dur, 'sine', 0.025); // soft octave-below warmth
+}
+function stepMelody(){
+  if(!musicOn) return;
+  const [freq, beats] = melody[melodyStep % melody.length];
+  const stepSec = 0.42;
+  playNote(freq, stepSec*beats*0.95);
+  melodyStep++;
+  musicTimer = setTimeout(stepMelody, stepSec*beats*1000);
+}
+function stepBass(){
+  if(!musicOn) return;
+  const freq = bassLine[bassStep % bassLine.length];
+  playTone(freq, 1.55, 'sine', 0.05);
+  playTone(freq*2, 1.55, 'triangle', 0.02);
+  bassStep++;
+  bassTimer = setTimeout(stepBass, 1680);
+}
+function stepArp(){
+  if(!musicOn) return;
+  const chord = chordTones[Math.floor(arpStep/3) % chordTones.length];
+  const note = chord[arpStep % 3];
+  playTone(note, 0.32, 'sine', 0.018);
+  arpStep++;
+  arpTimer = setTimeout(stepArp, 280);
+}
+const musicBtn = document.getElementById('musicBtn');
+musicBtn.addEventListener('click', () => {
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  musicOn = !musicOn;
+  musicBtn.textContent = musicOn ? '🔊 Music' : '🔇 Music';
+  if(musicOn){
+    melodyStep = 0; bassStep = 0; arpStep = 0;
+    stepMelody(); stepBass(); stepArp();
+  } else {
+    clearTimeout(musicTimer); clearTimeout(bassTimer); clearTimeout(arpTimer);
+  }
+});
+
+const fsBtn = document.getElementById('fsBtn');
+const wrapEl = document.getElementById('wrap');
+fsBtn.addEventListener('click', () => {
+  if(!document.fullscreenElement && !document.webkitFullscreenElement){
+    (wrapEl.requestFullscreen || wrapEl.webkitRequestFullscreen)?.call(wrapEl);
+  } else {
+    (document.exitFullscreen || document.webkitExitFullscreen)?.call(document);
+  }
+});
+function updateFsBtn(){
+  const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+  fsBtn.textContent = isFs ? '⛶ Exit' : '⛶ Fullscreen';
+}
+document.addEventListener('fullscreenchange', updateFsBtn);
+document.addEventListener('webkitfullscreenchange', updateFsBtn);
+
+function updateHud(){
+  const c = document.getElementById('hearts');
+  c.innerHTML = '';
+  heartPositions.forEach((_,i)=>{
+    const s = document.createElement('span');
+    s.className = 'heart-slot' + (collected.has(i)?' filled':'');
+    s.textContent = '🧚';
+    c.appendChild(s);
+  });
+  document.getElementById('progress').textContent =
+    `${collected.size} / ${heartPositions.length} fairies found — keep exploring the world`;
+}
+updateHud();
+
+document.getElementById('startBtn').addEventListener('click', ()=>{
+  document.getElementById('cover').style.display = 'none';
+});
+function showEnding(){
+  document.getElementById('endingText').textContent = ENDING_MESSAGE;
+  document.getElementById('ending').style.display = 'flex';
+}
+
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
