@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://benwojtecki.github.io/</loc>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://benwojtecki.github.io/Introduction_to_Quantum_Circuits.html</loc>
+  </url>
+
+  <url>
+    <loc>https://benwojtecki.github.io/Nono27Ans.html</loc>
+  </url>
+  
+  <url>
+    <loc>https://benwojtecki.github.io/Pac_Bayes_Bound.html</loc>
+  </url>
+
+  <url>
+    <loc>https://benwojtecki.github.io/Visualizator.html</loc>
+  </url>
+
+  <url>
+    <loc>https://benwojtecki.github.io/index.html</loc>
+  </url>
+
+</urlset>
